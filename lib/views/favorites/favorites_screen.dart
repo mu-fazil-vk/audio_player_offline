@@ -14,8 +14,9 @@ class FavoriteScreen extends StatefulWidget {
 class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      if (!context.mounted) return;
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.read<AudioDataProvider>().updateFromDb();
     });
     super.initState();
