@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import '../services/music_service.dart';
+import '../services/audio_data_service.dart';
 
 class AudioDataProvider extends ChangeNotifier {
   final AudioDataService _audioDataService;

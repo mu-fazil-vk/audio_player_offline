@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:music_player/core/theme/theme.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
-import 'package:music_player/services/music_service.dart';
+import 'package:music_player/providers/audio_provider.dart';
+import 'package:music_player/services/audio_data_service.dart';
+import 'package:music_player/services/offline_audio_service.dart';
 import 'package:music_player/services/navigation_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +15,20 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
+  // Initialize the singleton audio service
+  await OfflineAudioService.instance.initialize();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-          create: (_) => AudioDataProvider(audioDataService: AudioDataServiceImpl())),
+        create: (_) => AudioDataProvider(
+          audioDataService: AudioDataServiceImpl(),
+        ),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => AudioProvider(
+          OfflineAudioService.instance.audioHandler,
+        ),
+      ),
     ],
     child: const MyApp(),
   ));
@@ -73,16 +85,27 @@ Future<void> init() async {
       await Hive.openBox(boxName);
     }
 
-    // Check permissions
-    var storageStatus = await Permission.storage.status;
-    var audioStatus = await Permission.audio.status;
-    var mediaStatus = await Permission.mediaLibrary.status;
+    try {
+      // Check and request permissions for Android 13
+      if (await Permission.audio.isDenied ||
+          await Permission.audio.isPermanentlyDenied) {
+        await Permission.audio.request();
+      }
 
-    await Future.wait([
-      if (!storageStatus.isGranted) Permission.storage.request(),
-      if (!audioStatus.isGranted) Permission.audio.request(),
-      if (!mediaStatus.isGranted) Permission.mediaLibrary.request(),
-    ]);
+      if (await Permission.mediaLibrary.isDenied ||
+          await Permission.mediaLibrary.isPermanentlyDenied) {
+        await Permission.mediaLibrary.request();
+      }
+
+      if (await Permission.storage.isDenied ||
+          await Permission.storage.isPermanentlyDenied) {
+        await Permission.storage.request();
+      }
+
+      // Your initialization code
+    } catch (e) {
+      print('Initialization Error: $e');
+    }
 
     // audioHandler = await AudioService.init(
     //   builder: MusifyAudioHandler.new,

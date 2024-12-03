@@ -5,6 +5,7 @@ import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/calculate_columns.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
+import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/audio_card.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:provider/provider.dart';
@@ -64,13 +65,33 @@ class HomeScreen extends StatelessWidget {
                                     itemBuilder: (context, index) {
                                       final newIndex = index + columnCount * 4;
                                       final audioInfo = audioList[newIndex];
-                                      return CustomAudioListTile(
-                                        audioInfo: audioInfo,
-                                        columnCount: index + 1,
-                                        isFavorite: context
-                                            .watch<AudioDataProvider>()
-                                            .likedSongs
-                                            .contains(audioInfo),
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // context
+                                          //     .read<AudioDataProvider>()
+                                          //     .updateRecentlyPlayed(audioInfo);
+                                          context
+                                              .read<AudioProvider>()
+                                              .setPlaylist({
+                                            'title':
+                                                '003150_siren-test-prague-3-52475',
+                                            'list': audioList
+                                                .map((element) => {
+                                                      '_data': element.data,
+                                                      'title': element.title,
+                                                      'path': element.data,
+                                                    })
+                                                .toList()
+                                          }, index);
+                                        },
+                                        child: CustomAudioListTile(
+                                          audioInfo: audioInfo,
+                                          columnCount: index + 1,
+                                          isFavorite: context
+                                              .watch<AudioDataProvider>()
+                                              .likedSongs
+                                              .contains(audioInfo),
+                                        ),
                                       );
                                     }));
                           },
