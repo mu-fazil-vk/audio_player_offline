@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/player/custom_control_button.dart';
+import 'package:provider/provider.dart';
 
 class AdvancedPlayerControllersWidget extends StatelessWidget {
   const AdvancedPlayerControllersWidget({
@@ -8,32 +11,29 @@ class AdvancedPlayerControllersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const CustomControlButton(icon: Icon(Icons.repeat)),
-        const SizedBox(width: 20),
-        GestureDetector(
-          onTap: () {},
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .buttonTheme
-                  .colorScheme!
-                  .primaryContainer
-                  .withOpacity(0.5),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.shuffle,
-              color: Colors.white,
-            ),
+    return Consumer<AudioProvider>(
+        builder: (context, AudioProvider audioProvider, child) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomControlButton(
+            icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedRepeat,
+                color: Theme.of(context).buttonTheme.colorScheme!.primary),
+            isSelected: audioProvider.repeatNotifier.value,
+            onTap: () async => await audioProvider.toggleRepeat(),
           ),
-        ),
-        const SizedBox(width: 20),
-        const CustomControlButton(icon: Icon(Icons.shuffle)),
-      ],
-    );
+          const SizedBox(width: 20),
+          CustomControlButton(
+            icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedShuffle,
+                color: Theme.of(context).buttonTheme.colorScheme!.primary),
+            isSelected: audioProvider.shuffleNotifier.value,
+            onTap: () async => await audioProvider.toggleShuffle(),
+          ),
+          const SizedBox(width: 20),
+        ],
+      );
+    });
   }
 }

@@ -38,7 +38,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   final audioInfo =
                       context.read<AudioDataProvider>().likedSongs[index];
                   return CustomAudioListTile(
-                    isFavoriteScreen: true,
+                    showDuration: true,
                     audioInfo: audioInfo,
                   );
                 })

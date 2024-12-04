@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:music_player/views/bottom_avigation/bottom_navigation.dart';
 import 'package:music_player/views/favorites/favorites_screen.dart';
 import 'package:music_player/views/home/home_screen.dart';
+import 'package:music_player/views/player/full_screen_player.dart';
 import 'package:music_player/views/player/player_screen.dart';
 import 'package:music_player/views/settings/settings_screen.dart';
 
@@ -33,7 +34,7 @@ class NavigationService {
         path: '/player',
         pageBuilder: (context, state) {
           return getPage(
-            child: const PlayerScreen(),
+            child: const FullScreenMusicPlayer(),
             state: state,
           );
         },

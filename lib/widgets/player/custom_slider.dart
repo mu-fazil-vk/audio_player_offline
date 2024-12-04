@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/providers/audio_provider.dart';
+import 'package:provider/provider.dart';
 
 class CustomSlider extends StatefulWidget {
   const CustomSlider({super.key});
-
   @override
   CustomSliderState createState() => CustomSliderState();
 }
 
 class CustomSliderState extends State<CustomSlider> {
-  double _currentSliderValue = 12; // Start at 00:12 (in seconds)
+  bool _isDragging = false;
+  double _dragValue = 0;
 
-  // Hardcoded start and end times
-  final String startTime = "00:12";
-  final String endTime = "01:56";
-
-  // Convert seconds to mm:ss format
   String formatTime(int seconds) {
     int minutes = seconds ~/ 60;
     int remainingSeconds = seconds % 60;
@@ -25,38 +22,57 @@ class CustomSliderState extends State<CustomSlider> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 25, left: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  startTime,
-                  style: const TextStyle(fontSize: 14),
+      child: Consumer<AudioProvider>(
+        builder: (context, audioProvider, child) {
+          // Use drag value if currently dragging, otherwise use actual position
+          final position = _isDragging
+              ? _dragValue
+              : audioProvider.position.inSeconds.toDouble();
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 25, left: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      formatTime(position.toInt()),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      formatTime(audioProvider.duration.inSeconds),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
-                Text(
-                  endTime,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          Slider(
-            value: _currentSliderValue,
-            min: 0,
-            max: 116, // 01:56 in seconds
-            divisions: 116, // Max value of 116 for 01:56
-            label: formatTime(_currentSliderValue.toInt()),
-            onChanged: (double value) {
-              setState(() {
-                _currentSliderValue = value;
-              });
-            },
-          ),
-        ],
+              ),
+              Slider(
+                value: position.clamp(
+                    0, audioProvider.duration.inSeconds.toDouble()),
+                min: 0,
+                max: audioProvider.duration.inSeconds.toDouble(),
+                label: formatTime(position.toInt()),
+                onChangeStart: (value) {
+                  _isDragging = true;
+                  _dragValue = value;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    _dragValue = value;
+                  });
+                  // For smoother seeking, we can optionally add this:
+                  // audioProvider.seek(Duration(seconds: value.toInt()));
+                },
+                onChangeEnd: (value) {
+                  _isDragging = false;
+                  audioProvider.seek(Duration(seconds: value.toInt()));
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

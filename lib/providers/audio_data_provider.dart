@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/models/song_model.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../services/audio_data_service.dart';
 
@@ -36,8 +37,17 @@ class AudioDataProvider extends ChangeNotifier {
   }
 
   // Using service for data fetching
-  Future<(Exception?, List<SongModel>?)> getAllSongs() async {
-    return await _audioDataService.getAllSongs();
+  Future<(Exception?, List<AudioModel>?)> getAllSongs() async {
+    return await _audioDataService.getAllSongs().then((value) {
+      if (value.$2 != null) {
+        return (
+          null,
+          value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList()
+        );
+      } else {
+        return (Exception('Error'), null);
+      }
+    });
   }
 
   Future<List> getSongsList(String query) async {
@@ -48,7 +58,8 @@ class AudioDataProvider extends ChangeNotifier {
     return await _audioDataService.getAllAlbumsList();
   }
 
-  Future<(Exception?, List<AlbumModel>?)> getAlbumsList(String query) async {
+  Future<(Exception?, List<AlbumModel>?)> getAlbumsList(
+      String query) async {
     return await _audioDataService.getAlbumsList(query);
   }
 

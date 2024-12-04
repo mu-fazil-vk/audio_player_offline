@@ -4,14 +4,18 @@ class CustomControlButton extends StatelessWidget {
   const CustomControlButton({
     super.key,
     required this.icon,
+    this.onTap,
+    this.isSelected = false,
   });
 
   final Widget? icon;
+  final VoidCallback? onTap;
+  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
@@ -19,7 +23,7 @@ class CustomControlButton extends StatelessWidget {
               .buttonTheme
               .colorScheme!
               .primaryContainer
-              .withOpacity(0.5),
+              .withOpacity(isSelected ? 1 : 0.5),
           shape: BoxShape.circle,
         ),
         child: icon,

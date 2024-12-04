@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/calculate_columns.dart';
 import 'package:music_player/core/utils/size_extension.dart';
@@ -45,55 +46,46 @@ class HomeScreen extends StatelessWidget {
                         return const Text('Error');
                       }
                       if (snapshot.hasData && snapshot.data?.$2 != null) {
-                        final audioList = snapshot.data?.$2;
-                        final totalItems = (audioList?.length ?? 0);
+                        final audioList = snapshot.data!.$2!;
+                        final totalItems = audioList.length;
                         final numberOfColumns = calculateColumns(totalItems);
+
                         return ListView.builder(
-                          itemCount: numberOfColumns > 0 ? numberOfColumns : 0,
+                          itemCount: numberOfColumns,
                           scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            final columnCount = index + 1;
-                            final remainingItems =
-                                audioList!.length - (columnCount) * 4;
+                          itemBuilder: (context, columnIndex) {
+                            final startIndex = columnIndex * 4;
                             final itemsInThisColumn =
-                                min(4, max(0, remainingItems));
+                                min(4, max(0, totalItems - startIndex));
+
                             return SizedBox(
-                                width: 300,
-                                height: 300,
-                                child: ListView.builder(
-                                    itemCount: itemsInThisColumn,
-                                    itemBuilder: (context, index) {
-                                      final newIndex = index + columnCount * 4;
-                                      final audioInfo = audioList[newIndex];
-                                      return GestureDetector(
-                                        onTap: () {
-                                          // context
-                                          //     .read<AudioDataProvider>()
-                                          //     .updateRecentlyPlayed(audioInfo);
-                                          context
-                                              .read<AudioProvider>()
-                                              .setPlaylist({
-                                            'title':
-                                                '003150_siren-test-prague-3-52475',
-                                            'list': audioList
-                                                .map((element) => {
-                                                      '_data': element.data,
-                                                      'title': element.title,
-                                                      'path': element.data,
-                                                    })
-                                                .toList()
-                                          }, index);
-                                        },
-                                        child: CustomAudioListTile(
-                                          audioInfo: audioInfo,
-                                          columnCount: index + 1,
-                                          isFavorite: context
-                                              .watch<AudioDataProvider>()
-                                              .likedSongs
-                                              .contains(audioInfo),
-                                        ),
-                                      );
-                                    }));
+                              width: 300,
+                              height: 300,
+                              child: ListView.builder(
+                                  itemCount: itemsInThisColumn,
+                                  itemBuilder: (context, rowIndex) {
+                                    final audioIndex = startIndex + rowIndex;
+                                    final audioInfo = audioList[audioIndex];
+
+                                    return CustomAudioListTile(
+                                      onTap: () {
+                                        context
+                                            .read<AudioProvider>()
+                                            .setPlaylist({
+                                          'type': 'audio',
+                                          'list': audioList
+                                        }, audioIndex);
+                                        context.push('/player');
+                                      },
+                                      audioInfo: audioInfo,
+                                      columnCount: columnIndex + 1,
+                                      isFavorite: context
+                                          .watch<AudioDataProvider>()
+                                          .likedSongs
+                                          .contains(audioInfo),
+                                    );
+                                  }),
+                            );
                           },
                         );
                       }

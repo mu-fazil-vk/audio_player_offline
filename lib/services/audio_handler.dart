@@ -7,6 +7,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/models/position.dart';
+import 'package:music_player/models/song_model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler {
@@ -229,14 +230,13 @@ class AudioPlayerHandler extends BaseAudioHandler {
   // Add error handling and state logging
   Future<void> playTrack(int index) async {
     try {
-      print('${_activePlaylist['list'].length}');
       if (index >= 0 && index < _activePlaylist['list'].length) {
         _activeSongId = _shuffleNotifier.value
             ? _generateRandomIndex(_activePlaylist['list'].length)
             : index;
 
-        final track = _activePlaylist['list'][_activeSongId];
-        final file = File(track['_data']);
+        final AudioModel track = _activePlaylist['list'][_activeSongId];
+        final file = File(track.data);
 
         if (!await file.exists()) {
           print('File does not exist!');
@@ -246,7 +246,7 @@ class AudioPlayerHandler extends BaseAudioHandler {
         // Try using a progressive audio source
         await _audioPlayer.setAudioSource(
           ProgressiveAudioSource(
-            Uri.file(track['_data']),
+            Uri.file(track.data),
             tag: _createMediaItem(track),
           ),
         );
@@ -258,14 +258,14 @@ class AudioPlayerHandler extends BaseAudioHandler {
     }
   }
 
-  MediaItem _createMediaItem(Map<String, dynamic> track) {
+  MediaItem _createMediaItem(AudioModel track) {
     return MediaItem(
-      id: '1',
-      album: 'test',
-      title: 'test',
-      artist: null,
-      duration: Duration(milliseconds: 0),
-      artUri: null,
+      id: track.id.toString(),
+      album: track.album,
+      title: track.title,
+      artist: track.artist,
+      duration: Duration(milliseconds: track.duration ?? 0),
+      extras: {'data': track.data},
     );
   }
 
