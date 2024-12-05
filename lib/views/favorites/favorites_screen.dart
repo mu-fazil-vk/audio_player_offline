@@ -26,7 +26,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(kAppName),
+        title: Text(AppInfo().appName),
         centerTitle: false,
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),

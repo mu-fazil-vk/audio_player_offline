@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 
 class AboutSection extends StatelessWidget {
@@ -35,7 +37,7 @@ class AboutSection extends StatelessWidget {
         ListTile(
           title:
               Text('Version', style: Theme.of(context).textTheme.titleMedium),
-          subtitle: const Text('0.0.1'),
+          subtitle: Text(AppInfo().appVersion),
           leading: const Icon(Icons.info_outline),
           onTap: () {},
         ),
@@ -43,7 +45,9 @@ class AboutSection extends StatelessWidget {
         ListTile(
           title:
               Text('Licence', style: Theme.of(context).textTheme.titleMedium),
-          leading: const Icon(Icons.change_history),
+          leading: HugeIcon(
+              icon: HugeIcons.strokeRoundedLicense,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {},
         ),
         20.ph,

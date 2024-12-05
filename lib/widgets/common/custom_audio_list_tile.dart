@@ -4,6 +4,7 @@ import 'package:marquee/marquee.dart';
 import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/format_duration.dart';
 import 'package:music_player/models/song_model.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 class CustomAudioListTile extends StatelessWidget {
   /// A custom audio list tile that displays information about an audio item.
@@ -54,10 +55,17 @@ class CustomAudioListTile extends StatelessWidget {
         width: 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          image: const DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage(
-              kTestImage,
+        ),
+        child: QueryArtworkWidget(
+          id: audioInfo!.id,
+          type: ArtworkType.AUDIO,
+          nullArtworkWidget: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).primaryColorLight.withOpacity(0.5),
+            ),
+            child: const Icon(
+              Icons.music_note,
             ),
           ),
         ),
@@ -71,7 +79,6 @@ class CustomAudioListTile extends StatelessWidget {
             pauseAfterRound: const Duration(seconds: 1),
             velocity: 30,
             text: audioInfo?.title ?? 'Unknown Title',
-            style: const TextStyle(color: Colors.white),
           ),
         ),
       ),

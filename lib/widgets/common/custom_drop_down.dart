@@ -22,16 +22,19 @@ class CustomDropdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
       ),
       child: DropdownButton<String>(
+        isDense: true,
         value: selectedItem,
-        hint: Text(hint),
+        hint: Text(hint, style: Theme.of(context).textTheme.bodyMedium),
         icon: const Icon(Icons.arrow_drop_down),
         iconSize: 24,
         elevation: 16,
-        style: const TextStyle(fontSize: 16),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 16,
+            ),
         underline: Container(),
         onChanged: onChanged,
         items: items,
-        dropdownColor: Theme.of(context).highlightColor,
+        dropdownColor: Theme.of(context).secondaryHeaderColor,
         borderRadius: BorderRadius.circular(15.0),
       ),
     );

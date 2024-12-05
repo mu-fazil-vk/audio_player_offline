@@ -1,11 +1,10 @@
+// settings_service.dart is a file that contains all the settings and preferences of the app. It uses Hive to store the settings locally on the device. It also contains some non-storage notifiers that are used to control the shuffle and repeat functionality of the app.
 // Preferences
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-final playNextSongAutomatically = ValueNotifier<bool>(
-  Hive.box('settings').get('playNextSongAutomatically', defaultValue: false),
-);
+
 
 final useSystemColor = ValueNotifier<bool>(
   Hive.box('settings').get('useSystemColor', defaultValue: true),
@@ -13,10 +12,6 @@ final useSystemColor = ValueNotifier<bool>(
 
 final usePureBlackColor = ValueNotifier<bool>(
   Hive.box('settings').get('usePureBlackColor', defaultValue: false),
-);
-
-final useSquigglySlider = ValueNotifier<bool>(
-  Hive.box('settings').get('useSquigglySlider', defaultValue: false),
 );
 
 final predictiveBack = ValueNotifier<bool>(

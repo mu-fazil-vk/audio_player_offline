@@ -2,9 +2,12 @@ import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:music_player/models/position.dart';
 import 'package:music_player/models/song_model.dart';
+import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/services/audio_handler.dart';
+import 'package:provider/provider.dart';
 
 class AudioProvider extends ChangeNotifier {
   final AudioPlayerHandler _audioHandler;
@@ -17,7 +20,7 @@ class AudioProvider extends ChangeNotifier {
   Duration _duration = Duration.zero;
 
   AudioProvider(this._audioHandler) {
-    _initialize();
+    // _initialize();
   }
 
   // Getters
@@ -34,13 +37,15 @@ class AudioProvider extends ChangeNotifier {
   bool get hasPrevious => _audioHandler.hasPrevious;
   AudioModel? get currentPlayingAudio => _currentPlayingAudio;
 
-  void _initialize() {
+  void initialize(BuildContext context) {
     // Listen to playback state changes
     _audioHandler.playbackState.listen((state) {
+      if(state.playing) {
+        context.read<AudioDataProvider>().addSongToRecentlyPlayed(_currentPlayingAudio!.id);
+      }
       _isPlaying = state.playing;
       log('Is Playing: ${_audioHandler.mediaItem.value?.title}');
-      final currentPlayingAudioItems =
-          _currentPlaylist['list'];
+      final currentPlayingAudioItems = _currentPlaylist['list'];
       if (currentPlayingAudioItems.isNotEmpty) {
         final filteredItems = currentPlayingAudioItems.where((element) {
           return element?.id.toString() == _audioHandler.mediaItem.value?.id;

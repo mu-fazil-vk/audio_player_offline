@@ -12,6 +12,7 @@ class AudioDataProvider extends ChangeNotifier {
   List _likedSongs = [];
   List _recentlyPlayed = [];
   int _activeSongId = 0;
+  List _allSongs = [];
 
   AudioDataProvider({required AudioDataService audioDataService})
       : _audioDataService = audioDataService {
@@ -23,11 +24,13 @@ class AudioDataProvider extends ChangeNotifier {
   List get likedSongs => _likedSongs;
   List get recentlyPlayed => _recentlyPlayed;
   int get activeSongId => _activeSongId;
+  List get allSongs => _allSongs;
 
-  void _loadInitialData() {
+  void _loadInitialData() async {
     _customPlaylists = _userBox.get('customPlaylists', defaultValue: []);
     _likedSongs = _userBox.get('likedSongs', defaultValue: []);
     _recentlyPlayed = _userBox.get('recentlyPlayedSongs', defaultValue: []);
+    await getAllSongs();
     notifyListeners();
   }
 
@@ -40,6 +43,7 @@ class AudioDataProvider extends ChangeNotifier {
   Future<(Exception?, List<AudioModel>?)> getAllSongs() async {
     return await _audioDataService.getAllSongs().then((value) {
       if (value.$2 != null) {
+        _allSongs = value.$2!;
         return (
           null,
           value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList()
@@ -58,8 +62,7 @@ class AudioDataProvider extends ChangeNotifier {
     return await _audioDataService.getAllAlbumsList();
   }
 
-  Future<(Exception?, List<AlbumModel>?)> getAlbumsList(
-      String query) async {
+  Future<(Exception?, List<AlbumModel>?)> getAlbumsList(String query) async {
     return await _audioDataService.getAlbumsList(query);
   }
 
@@ -93,6 +96,14 @@ class AudioDataProvider extends ChangeNotifier {
       _likedSongs.removeWhere((song) => song['id'] == songId);
     }
     _updateStorage('likedSongs', _likedSongs);
+    notifyListeners();
+  }
+
+  void addSongToRecentlyPlayed(int songId) {
+    if (!_recentlyPlayed.any((song) => song['id'] == songId)) {
+      _recentlyPlayed.add({'id': songId});
+    }
+    _updateStorage('recentlyPlayedSongs', _recentlyPlayed);
     notifyListeners();
   }
 

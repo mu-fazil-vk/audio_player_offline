@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/providers/audio_provider.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 class MiniMusicPlayer extends StatelessWidget {
@@ -38,11 +38,24 @@ class MiniMusicPlayer extends StatelessWidget {
                       margin: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        image: const DecorationImage(
-                          image: AssetImage(
-                            kTestImage,
+                        color: Theme.of(context).primaryColor.withOpacity(0.5),
+                      ),
+                      child: QueryArtworkWidget(
+                        id: context
+                            .watch<AudioProvider>()
+                            .currentPlayingAudio!
+                            .id,
+                        type: ArtworkType.AUDIO,
+                        nullArtworkWidget: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Theme.of(context)
+                                .secondaryHeaderColor
+                                .withOpacity(0.5),
                           ),
-                          fit: BoxFit.cover,
+                          child: const Icon(
+                            Icons.music_note,
+                          ),
                         ),
                       ),
                     ),
@@ -88,7 +101,8 @@ class MiniMusicPlayer extends StatelessWidget {
                         icon: audioProvider.isPlaying
                             ? HugeIcons.strokeRoundedPause
                             : HugeIcons.strokeRoundedPlay,
-                        color: Colors.white,
+                        color:
+                            Theme.of(context).buttonTheme.colorScheme!.primary,
                       ),
                       onPressed: () async {
                         if (audioProvider.isPlaying) {

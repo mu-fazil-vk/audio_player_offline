@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:music_player/models/position.dart';
 import 'package:music_player/models/song_model.dart';
+import 'package:music_player/providers/settings_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler {

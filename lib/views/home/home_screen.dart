@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/calculate_columns.dart';
 import 'package:music_player/core/utils/size_extension.dart';
+import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/audio_card.dart';
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(kAppName),
+        title: Text(AppInfo().appName),
         centerTitle: false,
         actions: [
           IconButton(
@@ -157,10 +158,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             // Recently Played
-            if (context
-                .watch<AudioDataProvider>()
-                .recentlyPlayed
-                .isNotEmpty) ...[
+            if (context.watch<AudioDataProvider>().recentlyPlayed.isNotEmpty &&
+                context.watch<AudioDataProvider>().allSongs.isNotEmpty) ...[
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 20),
                 child: Column(
@@ -183,12 +182,20 @@ class HomeScreen extends StatelessWidget {
                         separatorBuilder: (context, index) =>
                             const SizedBox(width: 30),
                         itemBuilder: (context, index) {
-                          final audioInfo = context
+                          final audioId = context
                               .watch<AudioDataProvider>()
-                              .recentlyPlayed[index];
+                              .recentlyPlayed[index]['id'];
+                          print(
+                              'allSongs: ${context.read<AudioDataProvider>().allSongs}');
+                          final AudioModel? audioInfo = context
+                              .read<AudioDataProvider>()
+                              .allSongs
+                              .firstWhere((element) {
+                            return element.id.toString() == audioId.toString();
+                          }, orElse: () => null);
                           return AudioCardWidget(
-                            title: audioInfo.title,
-                            artist: audioInfo.artist,
+                            title: audioInfo?.title ?? 'Unknown Title',
+                            artist: audioInfo?.artist ?? 'Unknown',
                           );
                         },
                       ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:marquee/marquee.dart';
 import 'package:music_player/core/utils/size_extension.dart';
-import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:music_player/widgets/player/advanced_player_controllers.dart';
 import 'package:music_player/widgets/player/audio_banner.dart';
 import 'package:music_player/widgets/player/basic_audio_controllers.dart';
-import 'package:music_player/widgets/player/classic_control_buttons.dart';
 import 'package:music_player/widgets/player/custom_slider.dart';
 import 'package:music_player/widgets/player/more_options_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -49,23 +49,31 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
           return Column(
             children: [
               // Album Art
-              const Hero(
-                  key: ValueKey('image'),
+              Hero(
+                  key: const ValueKey('image'),
                   tag: 'image',
-                  child: AudioBannerWidget()),
+                  child: AudioBannerWidget(
+                    audioId: audioProvider.currentPlayingAudio!.id,
+                  )),
               // Song Info
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 60),
                 child: Column(
                   children: [
-                    Text(
-                      audioProvider.currentPlayingAudio?.title ??
-                          'Unknown Title',
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    SizedBox(
+                      height: 30,
+                      child: Marquee(
+                        startAfter: const Duration(seconds: 3),
+                        blankSpace: 100,
+                        pauseAfterRound: const Duration(seconds: 3),
+                        velocity: 30,
+                        text: audioProvider.currentPlayingAudio?.title ??
+                            'Unknown Title',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     8.ph,
@@ -99,12 +107,12 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                   showDragHandle: true,
                   builder: (context) => _buildQueueSheet(),
                 ),
-                child: const SizedBox(
+                child: SizedBox(
                   width: double.infinity,
-                  child: Icon(
-                    Icons.expand_less,
-                    color: Colors.grey,
-                  ),
+                  child: HugeIcon(
+                      icon: HugeIcons.strokeRoundedArrowUp01,
+                      color: Theme.of(context).buttonTheme.colorScheme!.primary,
+                      size: 30),
                 ),
               )
             ],

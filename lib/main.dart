@@ -6,9 +6,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:music_player/core/theme/theme.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
+import 'package:music_player/providers/settings_provider.dart';
+import 'package:music_player/providers/theme_provider.dart';
 import 'package:music_player/services/audio_data_service.dart';
 import 'package:music_player/services/offline_audio_service.dart';
 import 'package:music_player/services/navigation_service.dart';
+import 'package:music_player/services/settings/settings_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +32,19 @@ void main() async {
           OfflineAudioService.instance.audioHandler,
         ),
       ),
+      ChangeNotifierProvider(
+        create: (_) => AppSettingsProvider(),
+      ),
+      ChangeNotifierProxyProvider<AppSettingsProvider, ThemeProvider>(
+        create: (context) => ThemeProvider(
+          initialThemeMode: ThemeMode.system,
+          appSettings: context.read<AppSettingsProvider>(),
+        ),
+        update: (context, appSettings, previousThemeProvider) => ThemeProvider(
+          initialThemeMode: getThemeMode(appSettings.themeMode),
+          appSettings: appSettings,
+        ),
+      ),
     ],
     child: const MyApp(),
   ));
@@ -37,11 +53,33 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  static Future<void> updateAppState(
+    BuildContext context, {
+    ThemeMode? newThemeMode,
+    Locale? newLocale,
+    Color? newAccentColor,
+    bool? useSystemColor,
+  }) async {
+    final themeProvider = context.read<ThemeProvider>();
+    themeProvider.updateTheme(
+      newThemeMode: newThemeMode,
+      newLocale: newLocale,
+      newAccentColor: newAccentColor,
+      systemColorStatus: useSystemColor,
+    );
+  }
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    context.read<AudioProvider>().initialize(context);
+    super.initState();
+  }
+
   @override
   void dispose() {
     Hive.close();
@@ -52,22 +90,35 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (lightColorScheme, darkColorScheme) {
-        final colorScheme =
-            getAppColorScheme(lightColorScheme, darkColorScheme);
+        final themeProvider = context.watch<ThemeProvider>();
+        final appSettingsProvider = context.watch<AppSettingsProvider>();
+
+        final colorScheme = getAppColorScheme(
+          lightColorScheme,
+          darkColorScheme,
+          themeProvider.brightness,
+          appSettingsProvider,
+        );
 
         return MaterialApp.router(
-          themeMode: themeMode,
-          darkTheme: getAppTheme(colorScheme),
-          theme: getAppTheme(colorScheme),
+          darkTheme: ThemeData(
+            primaryColor: appSettingsProvider.primaryColor,
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: appSettingsProvider.primaryColor,
+              brightness: Brightness.dark,
+            ),
+          ),
+          themeMode: themeProvider.themeMode,
+          theme: ThemeData(
+            primaryColor: appSettingsProvider.primaryColor,
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: appSettingsProvider.primaryColor,
+              brightness: Brightness.light,
+            ),
+          ),
           debugShowCheckedModeBanner: false,
-          // localizationsDelegates: const [
-          //   AppLocalizations.delegate,
-          //   GlobalMaterialLocalizations.delegate,
-          //   GlobalWidgetsLocalizations.delegate,
-          //   GlobalCupertinoLocalizations.delegate,
-          // ],
-          // supportedLocales: appSupportedLocales,
-          // locale: languageSetting,
           routerConfig: NavigationService.router,
         );
       },

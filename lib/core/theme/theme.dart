@@ -2,7 +2,8 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:music_player/core/theme/dynamic_theme_fix.dart';
-import 'package:music_player/services/settings_service.dart';
+import 'package:music_player/providers/settings_provider.dart';
+import 'package:music_player/services/settings/settings_service.dart';
 
 ThemeMode themeMode = getThemeMode(themeModeSetting);
 Brightness brightness = getBrightnessFromThemeMode(themeMode);
@@ -40,12 +41,13 @@ ThemeMode getThemeMode(String themeModeString) {
 ColorScheme getAppColorScheme(
   ColorScheme? lightColorScheme,
   ColorScheme? darkColorScheme,
+  Brightness brightness,
+  AppSettingsProvider settings,
 ) {
-  if (useSystemColor.value &&
+  // temp-fix: https://github.com/material-foundation/flutter-packages/issues/582
+  if (settings.useSystemColor &&
       lightColorScheme != null &&
       darkColorScheme != null) {
-    // temp-fix: https://github.com/material-foundation/flutter-packages/issues/582
-
     (lightColorScheme, darkColorScheme) =
         generateDynamicColourSchemes(lightColorScheme, darkColorScheme);
   }
@@ -53,11 +55,11 @@ ColorScheme getAppColorScheme(
   final selectedScheme =
       (brightness == Brightness.light) ? lightColorScheme : darkColorScheme;
 
-  if (useSystemColor.value && selectedScheme != null) {
+  if (settings.useSystemColor && selectedScheme != null) {
     return selectedScheme;
   } else {
     return ColorScheme.fromSeed(
-      seedColor: primaryColorSetting,
+      seedColor: settings.primaryColor,
       brightness: brightness,
     ).harmonized();
   }
