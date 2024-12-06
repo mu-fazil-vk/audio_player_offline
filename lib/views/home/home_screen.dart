@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
-                //context.push('/player');
+                context.push('/search');
               },
               icon: const Icon(Icons.search))
         ],
@@ -33,6 +33,26 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Quick Picks',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontSize: 26,
+                        ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.go('/home/all-songs');
+                    },
+                    child: const Text('View All'),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(
               width: double.infinity,
               height: 300,
@@ -69,22 +89,25 @@ class HomeScreen extends StatelessWidget {
                                     final audioInfo = audioList[audioIndex];
 
                                     return CustomAudioListTile(
-                                      onTap: () {
-                                        context
-                                            .read<AudioProvider>()
-                                            .setPlaylist({
-                                          'type': 'audio',
-                                          'list': audioList
-                                        }, audioIndex);
-                                        context.push('/player');
-                                      },
-                                      audioInfo: audioInfo,
-                                      columnCount: columnIndex + 1,
-                                      isFavorite: context
-                                          .watch<AudioDataProvider>()
-                                          .likedSongs
-                                          .contains(audioInfo),
-                                    );
+                                        onTap: () {
+                                          context
+                                              .read<AudioProvider>()
+                                              .setPlaylist({
+                                            'type': 'audio',
+                                            'list': audioList
+                                          }, audioIndex);
+                                          context.push('/player');
+                                        },
+                                        audioInfo: audioInfo,
+                                        columnCount: columnIndex + 1,
+                                        isFavorite: context
+                                            .watch<AudioDataProvider>()
+                                            .likedSongs
+                                            .contains(audioInfo),
+                                        isPlaying: context
+                                                .watch<AudioProvider>()
+                                                .currentPlayingAudio ==
+                                            audioInfo);
                                   }),
                             );
                           },
@@ -106,7 +129,9 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Albums',
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontSize: 26,
+                        ),
                   ),
                   10.ph,
                   SizedBox(
@@ -144,8 +169,12 @@ class HomeScreen extends StatelessWidget {
                               separatorBuilder: (context, index) => 30.pw,
                               itemBuilder: (context, index) {
                                 return AudioCardWidget(
-                                  title: albumList![index].album,
+                                  audioId: albumList![index].id,
+                                  title: albumList[index].album,
                                   artist: albumList[index].artist ?? 'Unknown',
+                                  isAlbum: true,
+                                  onTap: () => context.go(
+                                      '/home/album-songs/${albumList[index].id}'),
                                 );
                               },
                             );
@@ -167,7 +196,10 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Recently Played',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontSize: 26,
+                              ),
                     ),
                     10.ph,
                     SizedBox(
@@ -185,17 +217,26 @@ class HomeScreen extends StatelessWidget {
                           final audioId = context
                               .watch<AudioDataProvider>()
                               .recentlyPlayed[index]['id'];
-                          print(
-                              'allSongs: ${context.read<AudioDataProvider>().allSongs}');
                           final AudioModel? audioInfo = context
                               .read<AudioDataProvider>()
                               .allSongs
-                              .firstWhere((element) {
-                            return element.id.toString() == audioId.toString();
-                          }, orElse: () => null);
+                              .firstWhere((element) => element.id == audioId);
                           return AudioCardWidget(
+                            audioId: audioInfo?.id ?? 0,
                             title: audioInfo?.title ?? 'Unknown Title',
                             artist: audioInfo?.artist ?? 'Unknown',
+                            onTap: () {
+                              context.read<AudioProvider>().setPlaylist(
+                                {
+                                  'type': 'audio',
+                                  'list': context
+                                      .read<AudioDataProvider>()
+                                      .recentlyPlayedSongModels
+                                },
+                                index,
+                              );
+                              context.push('/player');
+                            },
                           );
                         },
                       ),

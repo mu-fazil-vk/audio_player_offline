@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/models/position.dart';
 import 'package:music_player/models/song_model.dart';
@@ -19,9 +18,7 @@ class AudioProvider extends ChangeNotifier {
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
 
-  AudioProvider(this._audioHandler) {
-    // _initialize();
-  }
+  AudioProvider(this._audioHandler);
 
   // Getters
   bool get isPlaying => _isPlaying;
@@ -40,8 +37,10 @@ class AudioProvider extends ChangeNotifier {
   void initialize(BuildContext context) {
     // Listen to playback state changes
     _audioHandler.playbackState.listen((state) {
-      if(state.playing) {
-        context.read<AudioDataProvider>().addSongToRecentlyPlayed(_currentPlayingAudio!.id);
+      if (state.playing) {
+        context
+            .read<AudioDataProvider>()
+            .addSongToRecentlyPlayed(_currentPlayingAudio!.id);
       }
       _isPlaying = state.playing;
       log('Is Playing: ${_audioHandler.mediaItem.value?.title}');

@@ -24,7 +24,11 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
           children: [
             // Main content
             Positioned.fill(
-              bottom: 70, // NavigationBar height + MiniPlayer height
+              bottom:
+                  context.select((AudioProvider p) => p.currentPlayingAudio) !=
+                          null
+                      ? 70
+                      : 0, // NavigationBar height + MiniPlayer height
               child: widget.body,
             ),
 

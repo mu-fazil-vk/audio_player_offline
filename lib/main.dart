@@ -11,7 +11,6 @@ import 'package:music_player/providers/theme_provider.dart';
 import 'package:music_player/services/audio_data_service.dart';
 import 'package:music_player/services/offline_audio_service.dart';
 import 'package:music_player/services/navigation_service.dart';
-import 'package:music_player/services/settings/settings_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 

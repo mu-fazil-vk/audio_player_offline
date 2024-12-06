@@ -22,6 +22,7 @@ class CustomAudioListTile extends StatelessWidget {
         false, // Whether to show the playing animation on the trailing.
     this.showDuration = false, // Whether to show the duration on the trailing.
     this.onTap, // Callback function when the tile is tapped.
+    this.titleWidget, // Title widget to display in the tile.
   });
 
   /// Whether the audio is marked as a favorite.
@@ -45,6 +46,9 @@ class CustomAudioListTile extends StatelessWidget {
 
   /// A callback function that is called when the tile is tapped.
   final VoidCallback? onTap;
+
+  /// The title widget to display in the tile.
+  final Widget? titleWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -72,15 +76,16 @@ class CustomAudioListTile extends StatelessWidget {
       ),
       title: Padding(
         padding: const EdgeInsets.only(right: 30),
-        child: SizedBox(
-          height: 35,
-          child: Marquee(
-            startAfter: const Duration(seconds: 3),
-            pauseAfterRound: const Duration(seconds: 1),
-            velocity: 30,
-            text: audioInfo?.title ?? 'Unknown Title',
-          ),
-        ),
+        child: titleWidget ??
+            SizedBox(
+              height: 35,
+              child: Marquee(
+                startAfter: const Duration(seconds: 3),
+                pauseAfterRound: const Duration(seconds: 1),
+                velocity: 30,
+                text: audioInfo?.title ?? 'Unknown Title',
+              ),
+            ),
       ),
       subtitle: Text(
         audioInfo?.artist ?? 'Artist',
