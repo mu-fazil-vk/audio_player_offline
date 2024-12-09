@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:provider/provider.dart';

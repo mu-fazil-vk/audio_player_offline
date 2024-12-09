@@ -11,6 +11,7 @@ import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/audio_card.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -83,32 +84,38 @@ class HomeScreen extends StatelessWidget {
                               width: 300,
                               height: 300,
                               child: ListView.builder(
-                                  itemCount: itemsInThisColumn,
-                                  itemBuilder: (context, rowIndex) {
-                                    final audioIndex = startIndex + rowIndex;
-                                    final audioInfo = audioList[audioIndex];
+  itemCount: itemsInThisColumn,
+  itemBuilder: (context, rowIndex) {
+    final audioIndex = startIndex + rowIndex;
+    final audioInfo = audioList[audioIndex];
 
-                                    return CustomAudioListTile(
-                                        onTap: () {
-                                          context
-                                              .read<AudioProvider>()
-                                              .setPlaylist({
-                                            'type': 'audio',
-                                            'list': audioList
-                                          }, audioIndex);
-                                          context.push('/player');
-                                        },
-                                        audioInfo: audioInfo,
-                                        columnCount: columnIndex + 1,
-                                        isFavorite: context
-                                            .watch<AudioDataProvider>()
-                                            .likedSongs
-                                            .contains(audioInfo),
-                                        isPlaying: context
-                                                .watch<AudioProvider>()
-                                                .currentPlayingAudio ==
-                                            audioInfo);
-                                  }),
+    return Selector2<AudioDataProvider, AudioProvider, Tuple2<bool, bool>>(
+      selector: (context, audioDataProvider, audioProvider) => Tuple2(
+        audioDataProvider.likedSongs.contains(audioInfo),
+        audioProvider.currentPlayingAudio == audioInfo,
+      ),
+      builder: (context, data, child) {
+        final isFavorite = data.item1;
+        final isPlaying = data.item2;
+
+        return CustomAudioListTile(
+          onTap: () {
+            context.read<AudioProvider>().setPlaylist({
+              'type': 'audio',
+              'list': audioList,
+            }, audioIndex);
+            context.push('/player');
+          },
+          audioInfo: audioInfo,
+          columnCount: columnIndex + 1,
+          isFavorite: isFavorite,
+          isPlaying: isPlaying,
+        );
+      },
+    );
+  },
+)
+
                             );
                           },
                         );

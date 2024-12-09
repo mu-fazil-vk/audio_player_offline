@@ -4,26 +4,18 @@ import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:provider/provider.dart';
 
-class FavoriteScreen extends StatefulWidget {
+class FavoriteScreen extends StatelessWidget {
   const FavoriteScreen({super.key});
 
   @override
-  State<FavoriteScreen> createState() => _FavoriteScreenState();
-}
-
-class _FavoriteScreenState extends State<FavoriteScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      context.read<AudioDataProvider>().updateFromDb();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Fetch data from the database once when the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        context.read<AudioDataProvider>().updateFromDb();
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppInfo().appName),
@@ -31,18 +23,23 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
       body: Center(
-        child: context.read<AudioDataProvider>().likedSongs.isNotEmpty
-            ? ListView.builder(
-                itemCount: context.read<AudioDataProvider>().likedSongs.length,
-                itemBuilder: (context, index) {
-                  final audioInfo =
-                      context.read<AudioDataProvider>().likedSongs[index];
-                  return CustomAudioListTile(
-                    showDuration: true,
-                    audioInfo: audioInfo,
-                  );
-                })
-            : const Text('No favorite songs found!'),
+        child: Selector<AudioDataProvider, List>(
+          selector: (_, audioDataProvider) => audioDataProvider.likedSongs,
+          builder: (context, likedSongs, child) {
+            return likedSongs.isNotEmpty
+                ? ListView.builder(
+                    itemCount: likedSongs.length,
+                    itemBuilder: (context, index) {
+                      final audioInfo = likedSongs[index];
+                      return CustomAudioListTile(
+                        showDuration: true,
+                        audioInfo: audioInfo,
+                      );
+                    },
+                  )
+                : const Text('No favorite songs found!');
+          },
+        ),
       ),
     );
   }

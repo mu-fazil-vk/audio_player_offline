@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:music_player/main.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/views/player/transition_animations.dart';
 import 'package:music_player/views/player/full_screen_player.dart';
@@ -21,6 +20,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
+          fit: StackFit.expand,
           children: [
             // Main content
             Positioned.fill(
@@ -41,8 +41,13 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                     child: Dismissible(
                       key: UniqueKey(),
                       direction: DismissDirection.horizontal,
-                      onDismissed: (direction) {
-                        context.read<AudioProvider>().stop();
+                      onDismissed: (direction) async {
+                        await context.read<AudioProvider>().stop();
+                        if (context.mounted) {
+                          context
+                              .read<AudioProvider>()
+                              .setCurrentPlayingAudio(null);
+                        }
                       },
                       child: MiniMusicPlayer(
                         onTap: () {
@@ -66,8 +71,7 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
                       ),
                     ),
                   )
-                : const Positioned(
-                    left: 0, right: 0, bottom: 0, child: SizedBox.shrink()),
+                : const SizedBox.shrink(),
           ],
         ),
         bottomNavigationBar: NavigationBar(

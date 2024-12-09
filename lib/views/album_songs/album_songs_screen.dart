@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
-import 'package:music_player/widgets/common/audio_card.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:provider/provider.dart';
 
@@ -34,31 +33,35 @@ class AlbumSongsScreen extends StatelessWidget {
                 }
                 if (snapshot.hasData && snapshot.data?.$2 != null) {
                   final albumSongs = snapshot.data!.$2;
-                  return Consumer<AudioProvider>(
-                      builder: (context, audioProvider, child) {
-                    return ListView.builder(
-                      itemCount: albumSongs?.length ?? 0,
-                      itemBuilder: (context, index) {
-                        final audioInfo = albumSongs![index];
-                        return CustomAudioListTile(
-                          audioInfo: audioInfo,
-                          showDuration: true,
-                          isFavorite: context
-                              .read<AudioDataProvider>()
-                              .likedSongs
-                              .contains(audioInfo),
-                          isPlaying:
-                              audioProvider.currentPlayingAudio == audioInfo,
-                          onTap: () {
-                            audioProvider.setPlaylist({
-                              'type': 'album',
-                              'list': albumSongs,
-                            }, index);
-                          },
-                        );
-                      },
-                    );
-                  });
+                  return ListView.builder(
+                    itemCount: albumSongs?.length ?? 0,
+                    itemBuilder: (context, index) {
+                      final audioInfo = albumSongs![index];
+                      return Selector3<AudioDataProvider, AudioProvider,
+                          AudioDataProvider, (bool, bool, bool)>(
+                        selector: (_, audioData, audioProvider, likedData) => (
+                          likedData.likedSongs.contains(audioInfo),
+                          audioProvider.currentPlayingAudio == audioInfo,
+                          audioProvider.isPlaying &&
+                              audioProvider.currentPlayingAudio == audioInfo
+                        ),
+                        builder: (context, data, child) {
+                          return CustomAudioListTile(
+                            audioInfo: audioInfo,
+                            showDuration: true,
+                            isFavorite: data.$1, // From selector tuple
+                            isPlaying: data.$2, // From selector tuple
+                            onTap: () {
+                              context.read<AudioProvider>().setPlaylist({
+                                'type': 'album',
+                                'list': albumSongs,
+                              }, index);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
                 } else {
                   return const Text('Error');
                 }

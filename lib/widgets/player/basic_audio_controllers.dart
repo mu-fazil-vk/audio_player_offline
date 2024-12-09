@@ -11,56 +11,61 @@ class BasicAudioControllersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AudioProvider>(
-        builder: (context, AudioProvider audioProvider, child) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CustomControlButton(
+    return Selector<AudioProvider, bool>(
+      selector: (context, audioProvider) => audioProvider.isPlaying,
+      builder: (context, isPlaying, child) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomControlButton(
               icon: HugeIcon(
-                  icon: HugeIcons.strokeRoundedPrevious,
-                  color: Theme.of(context).buttonTheme.colorScheme!.primary),
-              onTap: () async => await audioProvider.skipToPrevious()),
-          const SizedBox(width: 20),
-          GestureDetector(
-            onTap: () async {
-              if (audioProvider.isPlaying) {
-                await audioProvider.pause();
-              } else {
-                await audioProvider.play();
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 70,
-                vertical: 15,
+                icon: HugeIcons.strokeRoundedPrevious,
+                color: Theme.of(context).buttonTheme.colorScheme!.primary,
               ),
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .buttonTheme
-                    .colorScheme!
-                    .primary
-                    .withOpacity(0.7),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: HugeIcon(
-                icon: audioProvider.isPlaying
-                    ? HugeIcons.strokeRoundedPause
-                    : HugeIcons.strokeRoundedPlay,
-                color: Colors.white,
+              onTap: () async => await context.read<AudioProvider>().skipToPrevious(),
+            ),
+            const SizedBox(width: 20),
+            GestureDetector(
+              onTap: () async {
+                final audioProvider = context.read<AudioProvider>();
+                if (isPlaying) {
+                  await audioProvider.pause();
+                } else {
+                  await audioProvider.play();
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 70,
+                  vertical: 15,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .buttonTheme
+                      .colorScheme!
+                      .primary
+                      .withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: HugeIcon(
+                  icon: isPlaying
+                      ? HugeIcons.strokeRoundedPause
+                      : HugeIcons.strokeRoundedPlay,
+                  color: Colors.white,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 20),
-          // Next Button
-          CustomControlButton(
-            icon: HugeIcon(
+            const SizedBox(width: 20),
+            CustomControlButton(
+              icon: HugeIcon(
                 icon: HugeIcons.strokeRoundedNext,
-                color: Theme.of(context).buttonTheme.colorScheme!.primary),
-            onTap: () async => await audioProvider.skipToNext(),
-          ),
-        ],
-      );
-    });
+                color: Theme.of(context).buttonTheme.colorScheme!.primary,
+              ),
+              onTap: () async => await context.read<AudioProvider>().skipToNext(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

@@ -9,6 +9,7 @@ class AllSongsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final allSongs = context.read<AudioDataProvider>().allSongs;
     return Scaffold(
         appBar: AppBar(
           title: const Text('All Songs'),
@@ -17,21 +18,30 @@ class AllSongsScreen extends StatelessWidget {
           child: ListView.builder(
             itemCount: 10,
             itemBuilder: (context, index) {
-              return CustomAudioListTile(
-                audioInfo: context.read<AudioDataProvider>().allSongs[index],
-                showDuration: true,
-                isFavorite: context
-                    .watch<AudioDataProvider>()
-                    .likedSongs
-                    .contains(
-                        context.read<AudioDataProvider>().allSongs[index]),
-                isPlaying: context.watch<AudioProvider>().currentPlayingAudio ==
-                    context.read<AudioDataProvider>().allSongs[index],
-                onTap: () {
-                  context.read<AudioProvider>().setPlaylist({
-                    'type': 'all_songs',
-                    'list': context.read<AudioDataProvider>().allSongs,
-                  }, index);
+              final currentSong = allSongs[index];
+              // Use Selector to only rebuild specific parts that change
+              return Selector3<AudioDataProvider, AudioProvider,
+                  AudioDataProvider, (bool, bool, bool)>(
+                selector: (_, audioData, audioProvider, likedData) => (
+                  // Only watch the specific states we need
+                  likedData.likedSongs.contains(currentSong),
+                  audioProvider.currentPlayingAudio == currentSong,
+                  audioProvider.isPlaying &&
+                      audioProvider.currentPlayingAudio == currentSong
+                ),
+                builder: (context, data, child) {
+                  return CustomAudioListTile(
+                    audioInfo: currentSong,
+                    showDuration: true,
+                    isFavorite: data.$1, // From selector tuple
+                    isPlaying: data.$2, // From selector tuple
+                    onTap: () {
+                      context.read<AudioProvider>().setPlaylist({
+                        'type': 'all_songs',
+                        'list': allSongs,
+                      }, index);
+                    },
+                  );
                 },
               );
             },

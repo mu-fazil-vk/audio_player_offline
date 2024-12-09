@@ -6,6 +6,7 @@ import 'package:music_player/models/position.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/services/audio_handler.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 class AudioProvider extends ChangeNotifier {
@@ -35,77 +36,115 @@ class AudioProvider extends ChangeNotifier {
   AudioModel? get currentPlayingAudio => _currentPlayingAudio;
 
   void initialize(BuildContext context) {
-    // Listen to playback state changes
-    _audioHandler.playbackState.listen((state) {
-      if (state.playing) {
-        context
-            .read<AudioDataProvider>()
-            .addSongToRecentlyPlayed(_currentPlayingAudio!.id);
+  // Debounce variables
+  DateTime? _lastPositionUpdate;
+  AudioModel? _lastPlayingAudio;
+  bool? _lastPlayingState;
+  
+  // Listen to playback state changes with throttling
+  _audioHandler.playbackState
+      .distinct() // Only emit when state actually changes
+      .listen((state) {
+    // Check if state update is needed using local cache
+    final bool currentPlaying = state.playing;
+    if (_lastPlayingState != currentPlaying) {
+      _lastPlayingState = currentPlaying;
+      _isPlaying = currentPlaying;
+      
+      // Handle recently played update
+      if (currentPlaying) {
+        // Use microtask to avoid blocking the main thread
+        Future.microtask(() {
+          if (_currentPlayingAudio != null) {
+            context
+                .read<AudioDataProvider>()
+                .addSongToRecentlyPlayed(_currentPlayingAudio!.id);
+          }
+        });
       }
-      _isPlaying = state.playing;
+      
       log('Is Playing: ${_audioHandler.mediaItem.value?.title}');
-      final currentPlayingAudioItems = _currentPlaylist['list'];
-      if (currentPlayingAudioItems.isNotEmpty) {
-        final filteredItems = currentPlayingAudioItems.where((element) {
-          return element?.id.toString() == _audioHandler.mediaItem.value?.id;
-        }).toList();
-
-        if (filteredItems.isNotEmpty) {
-          _currentPlayingAudio = filteredItems.first;
-        } else {
-          _currentPlayingAudio = _currentPlayingAudio;
-        }
-      }
       notifyListeners();
-    });
+    }
 
-    // Listen to current position
-    _audioHandler.positionDataStream.listen((positionData) {
+    // Cache current playlist for faster access
+    final List<AudioModel> currentPlayingAudioItems = _currentPlaylist['list'];
+    if (currentPlayingAudioItems.isEmpty) return;
+
+    // Optimize audio item lookup
+    final String? currentMediaId = _audioHandler.mediaItem.value?.id;
+    if (currentMediaId == null) return;
+
+    // Use firstWhere with orElse for more efficient lookup
+    AudioModel? newPlayingAudio;
+    try {
+      newPlayingAudio = currentPlayingAudioItems.toList().firstWhere(
+        (element) => element.id.toString() == currentMediaId,
+        orElse: () => _currentPlayingAudio!,
+      );
+    } catch (e) {
+      newPlayingAudio = _currentPlayingAudio;
+    }
+
+    // Compare with cached value to avoid unnecessary updates
+    if (_lastPlayingAudio?.id != newPlayingAudio?.id) {
+      _lastPlayingAudio = newPlayingAudio;
+      _currentPlayingAudio = newPlayingAudio;
+      notifyListeners();
+    }
+  });
+
+  // Listen to position updates with throttling
+  _audioHandler.positionDataStream
+      .distinct() // Only emit when position actually changes
+      .listen((positionData) {
+    final now = DateTime.now();
+    
+    // Throttle updates to max once per second
+    if (_lastPositionUpdate != null &&
+        now.difference(_lastPositionUpdate!) < const Duration(milliseconds: 250)) {
+      return;
+    }
+
+    // Check if update is significant enough
+    final positionDifference = (_position - positionData.position).abs();
+    final durationChanged = _duration != positionData.duration;
+    
+    if (positionDifference > const Duration(milliseconds: 500) || durationChanged) {
+      _lastPositionUpdate = now;
       _position = positionData.position;
       _duration = positionData.duration;
       notifyListeners();
-    });
-  }
+    }
+  });
+}
+
 
   // Set current playing audio
-  void setCurrentPlayingAudio(AudioModel audio) {
-    _currentPlayingAudio = audio;
-    notifyListeners();
+  void setCurrentPlayingAudio(AudioModel? audio) {
+    if (_currentPlayingAudio != audio) {
+      _currentPlayingAudio = audio;
+      notifyListeners();
+    }
   }
 
   // Playback control methods
-  Future<void> play() async {
-    await _audioHandler.play();
-  }
-
-  Future<void> pause() async {
-    await _audioHandler.pause();
-  }
-
-  Future<void> stop() async {
-    await _audioHandler.stop();
-  }
-
-  Future<void> seek(Duration position) async {
-    await _audioHandler.seek(position);
-  }
-
-  Future<void> skipToNext() async {
-    await _audioHandler.skipToNext();
-  }
-
-  Future<void> skipToPrevious() async {
-    await _audioHandler.skipToPrevious();
-  }
+  Future<void> play() async => await _audioHandler.play();
+  Future<void> pause() async => await _audioHandler.pause();
+  Future<void> stop() async => await _audioHandler.stop();
+  Future<void> seek(Duration position) async =>
+      await _audioHandler.seek(position);
+  Future<void> skipToNext() async => await _audioHandler.skipToNext();
+  Future<void> skipToPrevious() async => await _audioHandler.skipToPrevious();
 
   Future<void> toggleShuffle() async {
     final currentMode = shuffleNotifier.value;
     if (repeatNotifier.value) {
       await _audioHandler.setRepeatMode(AudioServiceRepeatMode.none);
     }
-    await _audioHandler.setShuffleMode(
-      currentMode ? AudioServiceShuffleMode.none : AudioServiceShuffleMode.all,
-    );
+    await _audioHandler.setShuffleMode(currentMode
+        ? AudioServiceShuffleMode.none
+        : AudioServiceShuffleMode.all);
     notifyListeners();
   }
 
@@ -115,8 +154,7 @@ class AudioProvider extends ChangeNotifier {
       await _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
     }
     await _audioHandler.setRepeatMode(
-      currentMode ? AudioServiceRepeatMode.none : AudioServiceRepeatMode.one,
-    );
+        currentMode ? AudioServiceRepeatMode.none : AudioServiceRepeatMode.one);
     notifyListeners();
   }
 

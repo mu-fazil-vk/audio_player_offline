@@ -7,6 +7,8 @@ import 'package:music_player/widgets/search/custom_tile_with_highlight.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
+import 'package:tuple/tuple.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({
     super.key,
@@ -128,18 +130,25 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     return ListView.builder(
-      key: ValueKey(_searchQuery),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _filteredItems.length,
-      itemBuilder: (context, index) {
-        final AudioModel item = _filteredItems[index];
+  key: ValueKey(_searchQuery),
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  itemCount: _filteredItems.length,
+  itemBuilder: (context, index) {
+    final AudioModel item = _filteredItems[index];
+
+    return Selector2<AudioDataProvider, AudioProvider, Tuple2<bool, bool>>(
+      selector: (context, audioDataProvider, audioProvider) {
+        final isFavorite = audioDataProvider.likedSongs.contains(item);
+        final isPlaying = audioProvider.currentPlayingAudio == item;
+        return Tuple2(isFavorite, isPlaying);
+      },
+      builder: (context, state, child) {
         return CustomAudioListTileWithHighlight(
           audioInfo: item,
           showDuration: true,
           searchQuery: _searchQuery,
-          isFavorite:
-              context.watch<AudioDataProvider>().likedSongs.contains(item),
-          isPlaying: context.watch<AudioProvider>().currentPlayingAudio == item,
+          isFavorite: state.item1,
+          isPlaying: state.item2,
           onTap: () {
             context.read<AudioProvider>().setPlaylist({
               'type': 'audio',
@@ -150,6 +159,8 @@ class _SearchScreenState extends State<SearchScreen> {
         );
       },
     );
+  },
+);
   }
 
   Widget _buildEmptyState() {

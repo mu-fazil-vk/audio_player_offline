@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:marquee/marquee.dart';
-import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/utils/format_duration.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:on_audio_query/on_audio_query.dart';
