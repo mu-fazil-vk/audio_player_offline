@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:music_player/core/utils/size_extension.dart';
+import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/settings_provider.dart';
 import 'package:music_player/widgets/common/custom_drop_down.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,8 @@ class AudioSettingsSection extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium),
           subtitle: const Text(
               'Clear all stored data (playback position, recent play, etc.).'),
-          leading: const Icon(Icons.delete),
+          leading: Icon(Icons.delete,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {
             showDialog(
               context: context,
@@ -91,17 +93,33 @@ class AudioSettingsSection extends StatelessWidget {
         ),
         10.ph,
         ListTile(
-          title: Text('Clear search history',
-              style: Theme.of(context).textTheme.titleMedium),
-          leading: const Icon(Icons.history),
-          onTap: () {},
-        ),
-        10.ph,
-        ListTile(
           title: Text('Clear recently played',
               style: Theme.of(context).textTheme.titleMedium),
-          leading: const Icon(Icons.do_not_disturb_alt_sharp),
-          onTap: () {},
+          leading: Icon(Icons.do_not_disturb_alt_sharp,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Clear recently played?'),
+                content: const Text(
+                    'This will clear all recently played songs from the list.'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      context.read<AudioDataProvider>().clearRecentlyPlayed();
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Clear'),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
         20.ph,
       ],

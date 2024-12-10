@@ -65,7 +65,11 @@ class CustomAudioListTile extends StatelessWidget {
           nullArtworkWidget: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).primaryColorLight.withOpacity(0.5),
+              color: Theme.of(context)
+                  .buttonTheme
+                  .colorScheme!
+                  .primary
+                  .withOpacity(0.3),
             ),
             child: const Icon(
               Icons.music_note,

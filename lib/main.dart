@@ -101,22 +101,14 @@ class _MyAppState extends State<MyApp> {
 
         return MaterialApp.router(
           darkTheme: ThemeData(
-            primaryColor: appSettingsProvider.primaryColor,
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: appSettingsProvider.primaryColor,
-              brightness: Brightness.dark,
-            ),
-          ),
+              primaryColor: appSettingsProvider.primaryColor,
+              useMaterial3: true,
+              colorScheme: colorScheme),
           themeMode: themeProvider.themeMode,
           theme: ThemeData(
-            primaryColor: appSettingsProvider.primaryColor,
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: appSettingsProvider.primaryColor,
-              brightness: Brightness.light,
-            ),
-          ),
+              primaryColor: appSettingsProvider.primaryColor,
+              useMaterial3: true,
+              colorScheme: colorScheme),
           debugShowCheckedModeBanner: false,
           routerConfig: NavigationService.router,
         );
@@ -151,21 +143,9 @@ Future<void> init() async {
           await Permission.storage.isPermanentlyDenied) {
         await Permission.storage.request();
       }
-
-      // Your initialization code
     } catch (e) {
       print('Initialization Error: $e');
     }
-
-    // audioHandler = await AudioService.init(
-    //   builder: MusifyAudioHandler.new,
-    //   config: const AudioServiceConfig(
-    //     androidNotificationChannelId: 'com.gokadzev.musify',
-    //     androidNotificationChannelName: 'Musify',
-    //     androidNotificationIcon: 'drawable/ic_launcher_foreground',
-    //     androidShowNotificationBadge: true,
-    //   ),
-    // );
 
     // Init router
     NavigationService.instance;

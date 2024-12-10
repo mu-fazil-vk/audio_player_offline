@@ -130,37 +130,37 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     return ListView.builder(
-  key: ValueKey(_searchQuery),
-  padding: const EdgeInsets.symmetric(horizontal: 16),
-  itemCount: _filteredItems.length,
-  itemBuilder: (context, index) {
-    final AudioModel item = _filteredItems[index];
+      key: ValueKey(_searchQuery),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: _filteredItems.length,
+      itemBuilder: (context, index) {
+        final AudioModel item = _filteredItems[index];
 
-    return Selector2<AudioDataProvider, AudioProvider, Tuple2<bool, bool>>(
-      selector: (context, audioDataProvider, audioProvider) {
-        final isFavorite = audioDataProvider.likedSongs.contains(item);
-        final isPlaying = audioProvider.currentPlayingAudio == item;
-        return Tuple2(isFavorite, isPlaying);
-      },
-      builder: (context, state, child) {
-        return CustomAudioListTileWithHighlight(
-          audioInfo: item,
-          showDuration: true,
-          searchQuery: _searchQuery,
-          isFavorite: state.item1,
-          isPlaying: state.item2,
-          onTap: () {
-            context.read<AudioProvider>().setPlaylist({
-              'type': 'audio',
-              'list': _filteredItems,
-            }, index);
-            context.push('/player');
+        return Selector2<AudioDataProvider, AudioProvider, Tuple2<bool, bool>>(
+          selector: (context, audioDataProvider, audioProvider) {
+            final isFavorite = audioDataProvider.likedSongs.contains(item);
+            final isPlaying = audioProvider.currentPlayingAudio == item;
+            return Tuple2(isFavorite, isPlaying);
+          },
+          builder: (context, state, child) {
+            return CustomAudioListTileWithHighlight(
+              audioInfo: item,
+              showDuration: true,
+              searchQuery: _searchQuery,
+              isFavorite: state.item1,
+              isPlaying: state.item2,
+              onTap: () {
+                context.read<AudioProvider>().setPlaylist({
+                  'type': 'audio',
+                  'list': _filteredItems,
+                }, index);
+                context.push('/player');
+              },
+            );
           },
         );
       },
     );
-  },
-);
   }
 
   Widget _buildEmptyState() {

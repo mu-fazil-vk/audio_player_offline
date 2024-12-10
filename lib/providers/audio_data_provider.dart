@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/models/playlist.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../services/audio_data_service.dart';
@@ -15,13 +16,13 @@ class AudioDataProvider extends ChangeNotifier {
   List _likedSongs = [];
   List _recentlyPlayed = [];
   List _allSongs = [];
-  
+
   // Private constructor
   AudioDataProvider._({required AudioDataService audioDataService})
       : _audioDataService = audioDataService {
     _loadInitialData();
   }
-  
+
   // Factory constructor for singleton instance
   factory AudioDataProvider({required AudioDataService audioDataService}) {
     _instance ??= AudioDataProvider._(audioDataService: audioDataService);
@@ -29,7 +30,8 @@ class AudioDataProvider extends ChangeNotifier {
   }
 
   // Getters
-  List get customPlaylists => _customPlaylists;
+  List<CustomPlaylistModel?> get customPlaylists =>
+      _customPlaylists.map((e) => CustomPlaylistModel.fromMap(e)).toList();
   List get likedSongs => _likedSongs;
   List get recentlyPlayed => _recentlyPlayed;
   List get recentlyPlayedSongModels => _recentlyPlayed
@@ -68,7 +70,8 @@ class AudioDataProvider extends ChangeNotifier {
 
     return await _audioDataService.getAllSongs().then((value) {
       if (value.$2 != null) {
-        final songs = value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList();
+        final songs =
+            value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList();
         _allSongs = songs;
         // Update cache
         _cachedSongs = songs;
@@ -81,7 +84,7 @@ class AudioDataProvider extends ChangeNotifier {
   }
 
   // Cache for albums
-  Map<int, List<AudioModel>> _albumSongsCache = {};
+  final Map<int, List<AudioModel>> _albumSongsCache = {};
   List<AlbumModel>? _cachedAlbums;
   DateTime? _lastAlbumsFetch;
 
@@ -113,7 +116,8 @@ class AudioDataProvider extends ChangeNotifier {
 
     return await _audioDataService.getAlbumsList(albumId).then((value) {
       if (value.$2 != null) {
-        final songs = value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList();
+        final songs =
+            value.$2!.map((e) => AudioModel.fromTheirSongModel(e)).toList();
         // Cache the results
         _albumSongsCache[albumId] = songs;
         return (null, songs);
@@ -127,12 +131,13 @@ class AudioDataProvider extends ChangeNotifier {
     if (query.isEmpty) {
       return _allSongs;
     }
-    
+
     final queryLower = query.toLowerCase();
-    return _allSongs.where((song) =>
-      song.title.toLowerCase().contains(queryLower) ||
-      song.artist.toLowerCase().contains(queryLower)
-    ).toList();
+    return _allSongs
+        .where((song) =>
+            song.title.toLowerCase().contains(queryLower) ||
+            song.artist.toLowerCase().contains(queryLower))
+        .toList();
   }
 
   Future<void> getUserPlaylists() async {
@@ -141,10 +146,10 @@ class AudioDataProvider extends ChangeNotifier {
 
   String createCustomPlaylist(String playlistName, String? image) {
     final customPlaylist = {
-      'title': playlistName,
-      'source': 'user-created',
-      if (image != null) 'image': image,
-      'list': [],
+      'id': '${_customPlaylists.length + 1}',
+      'name': playlistName,
+      'image': image,
+      'songs': <String>[],
     };
 
     _customPlaylists.add(customPlaylist);
@@ -154,10 +159,10 @@ class AudioDataProvider extends ChangeNotifier {
   }
 
   void toggleSongLike(String songId, bool isLiked) {
-    if (isLiked && !_likedSongs.any((song) => song['id'] == songId)) {
-      _likedSongs.add({'id': songId});
+    if (isLiked && !_likedSongs.any((likedSongId) => likedSongId == songId)) {
+      _likedSongs.add(songId);
     } else {
-      _likedSongs.removeWhere((song) => song['id'] == songId);
+      _likedSongs.removeWhere((likedSongId) => likedSongId == songId);
     }
     _updateStorage('likedSongs', _likedSongs);
     notifyListeners();
@@ -171,8 +176,27 @@ class AudioDataProvider extends ChangeNotifier {
     }
   }
 
+  void addSongToPlaylist(String songId, String playlistId) {
+    final playlist = _customPlaylists.firstWhere(
+        (playlist) => playlist['id'] == playlistId,
+        orElse: () => null);
+    if (playlist == null) return;
+    (playlist['songs'] as List).contains(songId)
+        ? (playlist['songs'] as List).remove(songId)
+        : (playlist['songs'] as List).add(songId);
+    _updateStorage('customPlaylists', _customPlaylists);
+    notifyListeners();
+  }
+
   void _updateStorage(String key, dynamic value) {
     _userBox.put(key, value);
+  }
+
+  // clear recently played songs
+  void clearRecentlyPlayed() {
+    _recentlyPlayed.clear();
+    _updateStorage('recentlyPlayedSongs', _recentlyPlayed);
+    notifyListeners();
   }
 
   // Method to clear caches if needed

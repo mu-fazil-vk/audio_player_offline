@@ -44,13 +44,15 @@ class CommonSettingsSection extends StatelessWidget {
           title:
               Text('Language', style: Theme.of(context).textTheme.titleMedium),
           subtitle: const Text('Select your language.'),
-          leading: const Icon(Icons.language),
+          leading: Icon(Icons.language,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {},
         ),
         10.ph,
         ListTile(
           title: Text('Theme', style: Theme.of(context).textTheme.titleMedium),
-          leading: const Icon(Icons.dark_mode_rounded),
+          leading: Icon(Icons.dark_mode_rounded,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
           trailing: CustomDropdown(
               items: _themeModes,
               hint: 'Dark',

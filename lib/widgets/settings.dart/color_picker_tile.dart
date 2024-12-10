@@ -40,7 +40,8 @@ class ColorPickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: const Icon(Icons.color_lens),
+      leading: Icon(Icons.color_lens,
+          color: Theme.of(context).buttonTheme.colorScheme!.primary),
       title: Text(title, style: Theme.of(context).textTheme.titleMedium),
       onTap: () => _showColorPicker(context),
       trailing: CircleAvatar(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:music_player/core/theme/theme.dart';
 import 'package:music_player/providers/settings_provider.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -42,10 +41,6 @@ class ThemeProvider extends ChangeNotifier {
     }
     
     if (newAccentColor != null) {
-      if (systemColorStatus != null && 
-          _appSettings.useSystemColor != systemColorStatus) {
-        _appSettings.setUseSystemColor(systemColorStatus);
-      }
       _appSettings.setPrimaryColor(newAccentColor);
     }
   }
@@ -57,7 +52,7 @@ class ThemeProvider extends ChangeNotifier {
       case ThemeMode.light:
         return Brightness.light;
       default:
-        return WidgetsBinding.instance.window.platformBrightness;
+        return WidgetsBinding.instance.platformDispatcher.platformBrightness;
     }
   }
 }

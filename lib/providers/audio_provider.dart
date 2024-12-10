@@ -6,7 +6,6 @@ import 'package:music_player/models/position.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/services/audio_handler.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:provider/provider.dart';
 
 class AudioProvider extends ChangeNotifier {
@@ -37,9 +36,9 @@ class AudioProvider extends ChangeNotifier {
 
   void initialize(BuildContext context) {
   // Debounce variables
-  DateTime? _lastPositionUpdate;
-  AudioModel? _lastPlayingAudio;
-  bool? _lastPlayingState;
+  DateTime? lastPositionUpdate;
+  AudioModel? lastPlayingAudio;
+  bool? lastPlayingState;
   
   // Listen to playback state changes with throttling
   _audioHandler.playbackState
@@ -47,15 +46,15 @@ class AudioProvider extends ChangeNotifier {
       .listen((state) {
     // Check if state update is needed using local cache
     final bool currentPlaying = state.playing;
-    if (_lastPlayingState != currentPlaying) {
-      _lastPlayingState = currentPlaying;
+    if (lastPlayingState != currentPlaying) {
+      lastPlayingState = currentPlaying;
       _isPlaying = currentPlaying;
       
       // Handle recently played update
       if (currentPlaying) {
         // Use microtask to avoid blocking the main thread
         Future.microtask(() {
-          if (_currentPlayingAudio != null) {
+          if (_currentPlayingAudio != null && context.mounted) {
             context
                 .read<AudioDataProvider>()
                 .addSongToRecentlyPlayed(_currentPlayingAudio!.id);
@@ -68,7 +67,7 @@ class AudioProvider extends ChangeNotifier {
     }
 
     // Cache current playlist for faster access
-    final List<AudioModel> currentPlayingAudioItems = _currentPlaylist['list'];
+    final currentPlayingAudioItems = _currentPlaylist['list'];
     if (currentPlayingAudioItems.isEmpty) return;
 
     // Optimize audio item lookup
@@ -87,8 +86,8 @@ class AudioProvider extends ChangeNotifier {
     }
 
     // Compare with cached value to avoid unnecessary updates
-    if (_lastPlayingAudio?.id != newPlayingAudio?.id) {
-      _lastPlayingAudio = newPlayingAudio;
+    if (lastPlayingAudio?.id != newPlayingAudio?.id) {
+      lastPlayingAudio = newPlayingAudio;
       _currentPlayingAudio = newPlayingAudio;
       notifyListeners();
     }
@@ -101,8 +100,8 @@ class AudioProvider extends ChangeNotifier {
     final now = DateTime.now();
     
     // Throttle updates to max once per second
-    if (_lastPositionUpdate != null &&
-        now.difference(_lastPositionUpdate!) < const Duration(milliseconds: 250)) {
+    if (lastPositionUpdate != null &&
+        now.difference(lastPositionUpdate!) < const Duration(milliseconds: 250)) {
       return;
     }
 
@@ -111,7 +110,7 @@ class AudioProvider extends ChangeNotifier {
     final durationChanged = _duration != positionData.duration;
     
     if (positionDifference > const Duration(milliseconds: 500) || durationChanged) {
-      _lastPositionUpdate = now;
+      lastPositionUpdate = now;
       _position = positionData.position;
       _duration = positionData.duration;
       notifyListeners();

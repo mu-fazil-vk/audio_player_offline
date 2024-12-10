@@ -45,24 +45,18 @@ ColorScheme getAppColorScheme(
   AppSettingsProvider settings,
 ) {
   // temp-fix: https://github.com/material-foundation/flutter-packages/issues/582
-  if (settings.useSystemColor &&
+  if (
       lightColorScheme != null &&
       darkColorScheme != null) {
     (lightColorScheme, darkColorScheme) =
         generateDynamicColourSchemes(lightColorScheme, darkColorScheme);
   }
 
-  final selectedScheme =
-      (brightness == Brightness.light) ? lightColorScheme : darkColorScheme;
-
-  if (settings.useSystemColor && selectedScheme != null) {
-    return selectedScheme;
-  } else {
+  
     return ColorScheme.fromSeed(
       seedColor: settings.primaryColor,
       brightness: brightness,
     ).harmonized();
-  }
 }
 
 ThemeData getAppTheme(ColorScheme colorScheme) {

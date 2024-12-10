@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildMoreOptionsSheet(context) {
+Widget buildMoreOptionsSheet(BuildContext context, {VoidCallback? addPlaylist}) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 20),
     child: Column(
@@ -9,10 +9,7 @@ Widget buildMoreOptionsSheet(context) {
         ListTile(
           leading: const Icon(Icons.add),
           title: const Text('Add to Playlist'),
-          onTap: () {
-            // Handle add to playlist
-            Navigator.pop(context);
-          },
+          onTap: addPlaylist,
         ),
         ListTile(
           leading: const Icon(Icons.share),
@@ -22,23 +19,8 @@ Widget buildMoreOptionsSheet(context) {
             Navigator.pop(context);
           },
         ),
-        ListTile(
-          leading: const Icon(Icons.album),
-          title: const Text('View Album'),
-          onTap: () {
-            // Handle view album
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.person),
-          title: const Text('View Artist'),
-          onTap: () {
-            // Handle view artist
-            Navigator.pop(context);
-          },
-        ),
       ],
     ),
   );
+  
 }

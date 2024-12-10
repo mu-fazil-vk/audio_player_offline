@@ -31,6 +31,11 @@ class AudioBannerWidget extends StatelessWidget {
               margin: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
+                color: Theme.of(context)
+                    .buttonTheme
+                    .colorScheme!
+                    .primary
+                    .withOpacity(0.3),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.2),
@@ -45,11 +50,17 @@ class AudioBannerWidget extends StatelessWidget {
                 nullArtworkWidget: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context)
+                        .buttonTheme
+                        .colorScheme!
+                        .primary
+                        .withOpacity(0.3),
                     border: Border.all(
                       color: Theme.of(context)
-                          .secondaryHeaderColor
-                          .withOpacity(0.5),
+                          .buttonTheme
+                          .colorScheme!
+                          .primary
+                          .withOpacity(0.3),
                       width: 2,
                     ),
                   ),
