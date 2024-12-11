@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:music_player/providers/audio_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
-Widget buildMoreOptionsSheet(BuildContext context, {VoidCallback? addPlaylist}) {
+Widget buildMoreOptionsSheet(BuildContext context,
+    {VoidCallback? addPlaylist}) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 20),
     child: Column(
@@ -14,13 +18,14 @@ Widget buildMoreOptionsSheet(BuildContext context, {VoidCallback? addPlaylist}) 
         ListTile(
           leading: const Icon(Icons.share),
           title: const Text('Share'),
-          onTap: () {
-            // Handle share
-            Navigator.pop(context);
+          onTap: () async {
+            await Share.shareXFiles(
+              [XFile(context.read<AudioProvider>().currentPlayingAudio!.data)],
+            );
+            if (context.mounted) Navigator.pop(context);
           },
         ),
       ],
     ),
   );
-  
 }
