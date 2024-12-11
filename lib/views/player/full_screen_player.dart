@@ -46,78 +46,7 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return AlertDialog(
-                          title: const Text('Add to Playlist'),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // List of playlists
-                              ...context
-                                  .watch<AudioDataProvider>()
-                                  .customPlaylists
-                                  .map((playlist) {
-                                return ListTile(
-                                  title: Text(playlist!.name),
-                                  onTap: () {
-                                    // Add the current song to the selected playlist
-                                    context
-                                        .read<AudioDataProvider>()
-                                        .addSongToPlaylist(
-                                            context
-                                                .read<AudioProvider>()
-                                                .currentPlayingAudio!
-                                                .id
-                                                .toString(),
-                                            playlist.id);
-                                    Navigator.pop(context);
-                                  },
-                                );
-                              }),
-                              // Add new playlist
-                              ListTile(
-                                title: const Text('Create New Playlist'),
-                                onTap: () {
-                                  // Show dialog to create new playlist
-                                  showDialog(
-                                    context: context,
-                                    builder: (ctx) {
-                                      final TextEditingController controller =
-                                          TextEditingController();
-                                      return AlertDialog(
-                                        title:
-                                            const Text('Create New Playlist'),
-                                        content: TextField(
-                                          controller: controller,
-                                          decoration: const InputDecoration(
-                                            hintText: 'Playlist Name',
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              // Create new playlist
-                                              context
-                                                  .read<AudioDataProvider>()
-                                                  .createCustomPlaylist(
-                                                      controller.text, null);
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Create'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
+                        return addPlaylistDialogue(context);
                       },
                     );
                   });
@@ -200,6 +129,82 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  AlertDialog addPlaylistDialogue(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Add to Playlist'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // List of playlists
+          ...context.watch<AudioDataProvider>().customPlaylists.map((playlist) {
+            return ListTile(
+              leading: const Icon(Icons.playlist_play),
+              title: Text(playlist!.name),
+              trailing: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text('${playlist.songs.length}',
+                      style: const TextStyle(fontSize: 16))),
+              onTap: () {
+                // Add the current song to the selected playlist
+                context.read<AudioDataProvider>().addSongToPlaylist(
+                    context
+                        .read<AudioProvider>()
+                        .currentPlayingAudio!
+                        .id
+                        .toString(),
+                    playlist.id);
+                Navigator.pop(context);
+              },
+            );
+          }),
+          // Add new playlist
+          TextButton(
+            child: const Text('Create New Playlist'),
+            onPressed: () {
+              // Show dialog to create new playlist
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  final TextEditingController controller =
+                      TextEditingController();
+                  return AlertDialog(
+                    title: const Text('Create New Playlist'),
+                    content: TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        hintText: 'Playlist Name',
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Create new playlist
+                          context
+                              .read<AudioDataProvider>()
+                              .createCustomPlaylist(controller.text, null);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Create'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

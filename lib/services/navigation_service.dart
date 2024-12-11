@@ -6,7 +6,6 @@ import 'package:music_player/views/bottom_avigation/bottom_navigation.dart';
 import 'package:music_player/views/favorites/favorites_screen.dart';
 import 'package:music_player/views/home/home_screen.dart';
 import 'package:music_player/views/player/full_screen_player.dart';
-import 'package:music_player/views/search/search_screen.dart';
 import 'package:music_player/views/settings/settings_screen.dart';
 
 class NavigationService {
