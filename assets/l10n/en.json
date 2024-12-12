@@ -1,0 +1,20 @@
+{
+    "viewAll": "view all",
+    "unknownTitle": "Unknown Title",
+    "unknownArtist": "Unknown Artist",
+    "error": "Error",
+    "noData": "No data",
+    "recentlyPlayed": "Recently Played",
+    "albums": "Albums",
+    "quickPicks": "Quick Picks",
+    "albumSongs": "Album Songs",
+    "allSongs": "All Songs",
+    "searchFavorites": "Search Favorites",
+    "noFavoriteSongs": "You have not liked any songs yet",
+    "noResultsFound": "No results found for \"{query}\"",
+    "addToPlaylist": "Add to Playlist",
+    "newPlaylist": "New Playlist",
+    "playlistName": "Playlist Name",
+    "cancel": "Cancel",
+    "create": "Create"
+}

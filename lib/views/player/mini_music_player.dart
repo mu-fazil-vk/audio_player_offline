@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -71,7 +73,7 @@ class MiniMusicPlayer extends StatelessWidget {
                       children: [
                         Text(
                           audioProvider.currentPlayingAudio?.title ??
-                              'Unknown Title',
+                              LocaleKeys.unknownTitle.tr(),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -81,7 +83,7 @@ class MiniMusicPlayer extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           audioProvider.currentPlayingAudio?.artist ??
-                              'Unknown Artist',
+                              LocaleKeys.unknownArtist.tr(),
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:music_player/core/theme/theme.dart';
@@ -16,6 +17,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await init();
   // Initialize the singleton audio service
   await OfflineAudioService.instance.initialize();
@@ -45,7 +47,16 @@ void main() async {
         ),
       ),
     ],
-    child: const MyApp(),
+    child: EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ml')],
+      path: 'assets/l10n',
+      fallbackLocale: const Locale('en'),
+      useOnlyLangCode: true,
+      startLocale: const Locale('en'),
+      useFallbackTranslations: true,
+      saveLocale: true,
+      child: const MyApp(),
+    ),
   ));
 }
 
@@ -111,6 +122,9 @@ class _MyAppState extends State<MyApp> {
               colorScheme: colorScheme),
           debugShowCheckedModeBanner: false,
           routerConfig: NavigationService.router,
+          locale: context.locale,
+          supportedLocales: context.supportedLocales,
+          localizationsDelegates: context.localizationDelegates,
         );
       },
     );

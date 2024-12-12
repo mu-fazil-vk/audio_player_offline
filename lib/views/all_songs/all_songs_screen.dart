@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
@@ -12,18 +14,16 @@ class AllSongsScreen extends StatelessWidget {
     final allSongs = context.read<AudioDataProvider>().allSongs;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('All Songs'),
+          title: Text(LocaleKeys.allSongs.tr()),
         ),
         body: Center(
           child: ListView.builder(
             itemCount: 10,
             itemBuilder: (context, index) {
               final currentSong = allSongs[index];
-              // Use Selector to only rebuild specific parts that change
               return Selector3<AudioDataProvider, AudioProvider,
                   AudioDataProvider, (bool, bool, bool)>(
                 selector: (_, audioData, audioProvider, likedData) => (
-                  // Only watch the specific states we need
                   likedData.likedSongs.contains(currentSong),
                   audioProvider.currentPlayingAudio == currentSong,
                   audioProvider.isPlaying &&
@@ -34,12 +34,15 @@ class AllSongsScreen extends StatelessWidget {
                     audioInfo: currentSong,
                     showDuration: true,
                     isFavorite: data.$1, // From selector tuple
-                    isPlaying: data.$2, // From selector tuple
+                    isPlaying: data.$2, 
                     onTap: () {
-                      context.read<AudioProvider>().setPlaylist({
-                        'type': 'all_songs',
-                        'list': allSongs,
-                      }, index);
+                      context.read<AudioProvider>().setPlaylist(
+                        {
+                          'type': 'all_songs',
+                          'list': allSongs,
+                        },
+                        index,
+                      );
                     },
                   );
                 },

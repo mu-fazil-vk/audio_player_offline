@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:music_player/core/constants/app_constants.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
@@ -94,7 +96,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         child: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Search favorites...',
+            hintText: '${LocaleKeys.searchFavorites}...',
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
@@ -129,7 +131,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'No favorite songs yet',
+              LocaleKeys.noFavoriteSongs.tr(),
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).disabledColor,
                   ),
@@ -150,7 +152,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No results found for "${_searchController.text}"',
+            LocaleKeys.noResultsFound
+                .tr(namedArgs: {'query': _searchController.text}),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).disabledColor,
                 ),

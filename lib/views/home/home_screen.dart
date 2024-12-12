@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:music_player/core/constants/app_constants.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/calculate_columns.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/models/song_model.dart';
@@ -25,7 +27,13 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
-                context.push('/search');
+                // changeLanguage(lang) {
+                // setState(() {
+                var lang = context.locale == const Locale('en') ? 'ml' : 'en';
+                context.setLocale(Locale(lang));
+                // });
+                // }
+                //context.push('/search');
               },
               icon: const Icon(Icons.search))
         ],
@@ -40,7 +48,7 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Quick Picks',
+                    LocaleKeys.quickPicks.tr(),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontSize: 26,
                         ),
@@ -49,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                     onPressed: () {
                       context.go('/home/all-songs');
                     },
-                    child: const Text('View All'),
+                    child: Text(LocaleKeys.viewAll.tr()),
                   ),
                 ],
               ),
@@ -65,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                         return const CircularProgressIndicator();
                       }
                       if (snapshot.hasError) {
-                        return const Text('Error');
+                        return Center(child: Text(LocaleKeys.error.tr()));
                       }
                       if (snapshot.hasData && snapshot.data?.$2 != null) {
                         final audioList = snapshot.data!.$2!;
@@ -81,49 +89,54 @@ class HomeScreen extends StatelessWidget {
                                 min(4, max(0, totalItems - startIndex));
 
                             return SizedBox(
-                              width: 300,
-                              height: 300,
-                              child: ListView.builder(
-  itemCount: itemsInThisColumn,
-  itemBuilder: (context, rowIndex) {
-    final audioIndex = startIndex + rowIndex;
-    final audioInfo = audioList[audioIndex];
+                                width: 300,
+                                height: 300,
+                                child: ListView.builder(
+                                  itemCount: itemsInThisColumn,
+                                  itemBuilder: (context, rowIndex) {
+                                    final audioIndex = startIndex + rowIndex;
+                                    final audioInfo = audioList[audioIndex];
 
-    return Selector2<AudioDataProvider, AudioProvider, Tuple2<bool, bool>>(
-      selector: (context, audioDataProvider, audioProvider) => Tuple2(
-        audioDataProvider.likedSongs.contains(audioInfo),
-        audioProvider.currentPlayingAudio == audioInfo,
-      ),
-      builder: (context, data, child) {
-        final isFavorite = data.item1;
-        final isPlaying = data.item2;
+                                    return Selector2<AudioDataProvider,
+                                        AudioProvider, Tuple2<bool, bool>>(
+                                      selector: (context, audioDataProvider,
+                                              audioProvider) =>
+                                          Tuple2(
+                                        audioDataProvider.likedSongs
+                                            .contains(audioInfo),
+                                        audioProvider.currentPlayingAudio ==
+                                            audioInfo,
+                                      ),
+                                      builder: (context, data, child) {
+                                        final isFavorite = data.item1;
+                                        final isPlaying = data.item2;
 
-        return CustomAudioListTile(
-          onTap: () {
-            context.read<AudioProvider>().setPlaylist({
-              'type': 'audio',
-              'list': audioList,
-            }, audioIndex);
-            context.push('/player');
-          },
-          audioInfo: audioInfo,
-          columnCount: columnIndex + 1,
-          isFavorite: isFavorite,
-          isPlaying: isPlaying,
-        );
-      },
-    );
-  },
-)
-
-                            );
+                                        return CustomAudioListTile(
+                                          onTap: () {
+                                            context
+                                                .read<AudioProvider>()
+                                                .setPlaylist({
+                                              'type': 'audio',
+                                              'list': audioList,
+                                            }, audioIndex);
+                                            context.push('/player');
+                                          },
+                                          audioInfo: audioInfo,
+                                          columnCount: columnIndex + 1,
+                                          isFavorite: isFavorite,
+                                          isPlaying: isPlaying,
+                                        );
+                                      },
+                                    );
+                                  },
+                                ));
                           },
                         );
                       }
                       if (snapshot.hasData && snapshot.data?.$2 == null) {
-                        return const Text('No data');
+                        return Center(child: Text(LocaleKeys.noData.tr()));
                       } else {
-                        return const Text('Error');
+                        return Center(child: Text(LocaleKeys.error.tr()));
                       }
                     }),
               ),
@@ -135,7 +148,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Albums',
+                    LocaleKeys.albums.tr(),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontSize: 26,
                         ),
@@ -158,13 +171,14 @@ class HomeScreen extends StatelessWidget {
                             );
                           }
                           if (snapshot.hasError) {
-                            return const Text('Error');
+                            return Center(child: Text(LocaleKeys.error.tr()));
                           }
                           if (snapshot.data?.$2 == null) {
-                            return const Text('No data');
+                            return Center(child: Text(LocaleKeys.noData.tr()));
                           }
                           if (snapshot.data?.$1 != null) {
-                            return Text(snapshot.data!.$1.toString());
+                            return Center(
+                                child: Text(snapshot.data!.$1.toString()));
                           }
                           if (snapshot.hasData && snapshot.data?.$2 != null) {
                             final albumList = snapshot.data?.$2;
@@ -178,7 +192,8 @@ class HomeScreen extends StatelessWidget {
                                 return AudioCardWidget(
                                   audioId: albumList![index].id,
                                   title: albumList[index].album,
-                                  artist: albumList[index].artist ?? 'Unknown',
+                                  artist: albumList[index].artist ??
+                                      LocaleKeys.unknownArtist.tr(),
                                   isAlbum: true,
                                   onTap: () => context.go(
                                       '/home/album-songs/${albumList[index].id}'),
@@ -186,7 +201,7 @@ class HomeScreen extends StatelessWidget {
                               },
                             );
                           } else {
-                            return const Text('Error');
+                            return Center(child: Text(LocaleKeys.error.tr()));
                           }
                         }),
                   ),
@@ -202,7 +217,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Recently Played',
+                      LocaleKeys.recentlyPlayed.tr(),
                       style:
                           Theme.of(context).textTheme.headlineMedium?.copyWith(
                                 fontSize: 26,
@@ -230,8 +245,10 @@ class HomeScreen extends StatelessWidget {
                               .firstWhere((element) => element.id == audioId);
                           return AudioCardWidget(
                             audioId: audioInfo?.id ?? 0,
-                            title: audioInfo?.title ?? 'Unknown Title',
-                            artist: audioInfo?.artist ?? 'Unknown',
+                            title: audioInfo?.title ??
+                                LocaleKeys.unknownTitle.tr(),
+                            artist: audioInfo?.artist ??
+                                LocaleKeys.unknownArtist.tr(),
                             onTap: () {
                               context.read<AudioProvider>().setPlaylist(
                                 {

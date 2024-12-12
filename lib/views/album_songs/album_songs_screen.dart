@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
@@ -13,7 +15,7 @@ class AlbumSongsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Album Songs'),
+          title: Text(LocaleKeys.albumSongs.tr()),
         ),
         body: Center(
           child: FutureBuilder(
@@ -23,13 +25,13 @@ class AlbumSongsScreen extends StatelessWidget {
                   return const CircularProgressIndicator();
                 }
                 if (snapshot.hasError) {
-                  return const Text('Error');
+                  return Center(child: Text(LocaleKeys.error.tr()));
                 }
                 if (snapshot.data?.$2 == null) {
-                  return const Text('No data');
+                  return Center(child: Text(LocaleKeys.noData.tr()));
                 }
                 if (snapshot.data?.$1 != null) {
-                  return Text(snapshot.data!.$1.toString());
+                  return Center(child: Text(snapshot.data!.$1.toString()));
                 }
                 if (snapshot.hasData && snapshot.data?.$2 != null) {
                   final albumSongs = snapshot.data!.$2;
@@ -52,10 +54,13 @@ class AlbumSongsScreen extends StatelessWidget {
                             isFavorite: data.$1, // From selector tuple
                             isPlaying: data.$2, // From selector tuple
                             onTap: () {
-                              context.read<AudioProvider>().setPlaylist({
-                                'type': 'album',
-                                'list': albumSongs,
-                              }, index);
+                              context.read<AudioProvider>().setPlaylist(
+                                {
+                                  'type': 'album',
+                                  'list': albumSongs,
+                                },
+                                index,
+                              );
                             },
                           );
                         },
@@ -63,7 +68,7 @@ class AlbumSongsScreen extends StatelessWidget {
                     },
                   );
                 } else {
-                  return const Text('Error');
+                  return Center(child: Text(LocaleKeys.error.tr()));
                 }
               }),
         ));

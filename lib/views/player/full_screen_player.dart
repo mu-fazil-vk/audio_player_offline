@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:marquee/marquee.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
@@ -91,7 +93,7 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                       ),
                       8.ph,
                       Text(
-                        currentAudio.artist ?? 'Unknown Artist',
+                        currentAudio.artist ?? LocaleKeys.unknownArtist.tr(),
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 18,
@@ -135,7 +137,7 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
 
   AlertDialog addPlaylistDialogue(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add to Playlist'),
+      title: Text(LocaleKeys.addToPlaylist.tr()),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -167,7 +169,7 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
           }),
           // Add new playlist
           TextButton(
-            child: const Text('Create New Playlist'),
+            child: Text(LocaleKeys.newPlaylist.tr()),
             onPressed: () {
               // Show dialog to create new playlist
               showDialog(
@@ -176,17 +178,17 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                   final TextEditingController controller =
                       TextEditingController();
                   return AlertDialog(
-                    title: const Text('Create New Playlist'),
+                    title: Text(LocaleKeys.newPlaylist.tr()),
                     content: TextField(
                       controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Playlist Name',
+                      decoration: InputDecoration(
+                        hintText: LocaleKeys.playlistName.tr(),
                       ),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                        child: Text(LocaleKeys.cancel.tr()),
                       ),
                       TextButton(
                         onPressed: () {
@@ -196,7 +198,7 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                               .createCustomPlaylist(controller.text, null);
                           Navigator.pop(context);
                         },
-                        child: const Text('Create'),
+                        child: Text(LocaleKeys.create.tr()),
                       ),
                     ],
                   );
