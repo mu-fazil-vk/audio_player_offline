@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/settings_provider.dart';
@@ -18,7 +20,7 @@ class AudioSettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Tools',
+          LocaleKeys.audio.tr(),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
         ),
         10.ph,
@@ -26,7 +28,7 @@ class AudioSettingsSection extends StatelessWidget {
           secondary: HugeIcon(
               icon: HugeIcons.strokeRoundedVoice,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
-          title: Text('Audio Visualizer',
+          title: Text(LocaleKeys.audioBannerAnimation.tr(),
               style: Theme.of(context).textTheme.titleMedium),
           value: settings.showAudioVisualizer,
           onChanged: (value) => settings.setShowAudioVisualizer(value),
@@ -37,7 +39,7 @@ class AudioSettingsSection extends StatelessWidget {
             leading: HugeIcon(
                 icon: HugeIcons.strokeRoundedVoiceId,
                 color: Theme.of(context).buttonTheme.colorScheme!.primary),
-            title: Text('Visualizer Style',
+            title: Text(LocaleKeys.animations.tr(),
                 style: Theme.of(context).textTheme.titleMedium),
             trailing: CustomDropdown(
                 hint: 'Music',
@@ -61,30 +63,28 @@ class AudioSettingsSection extends StatelessWidget {
           ),
         10.ph,
         ListTile(
-          title: Text('Clear datas',
+          title: Text(LocaleKeys.clearData.tr(),
               style: Theme.of(context).textTheme.titleMedium),
-          subtitle: const Text(
-              'Clear all stored data (playback position, recent play, etc.).'),
+          subtitle: Text(LocaleKeys.clearDataDesc.tr()),
           leading: Icon(Icons.delete,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Clear all data?'),
-                content: const Text(
-                    'This will clear all stored data (playback position, recent play, etc.).'),
+                title: Text(LocaleKeys.clearAllData.tr()),
+                content: Text(LocaleKeys.clearAllDataDesc.tr()),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(LocaleKeys.cancel.tr()),
                   ),
                   TextButton(
                     onPressed: () {
                       settings.clearAllData();
                       Navigator.pop(context);
                     },
-                    child: const Text('Clear'),
+                    child: Text(LocaleKeys.clear.tr()),
                   ),
                 ],
               ),
@@ -93,7 +93,7 @@ class AudioSettingsSection extends StatelessWidget {
         ),
         10.ph,
         ListTile(
-          title: Text('Clear recently played',
+          title: Text(LocaleKeys.clearRecentlyPlayed.tr(),
               style: Theme.of(context).textTheme.titleMedium),
           leading: Icon(Icons.do_not_disturb_alt_sharp,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
@@ -101,20 +101,19 @@ class AudioSettingsSection extends StatelessWidget {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Clear recently played?'),
-                content: const Text(
-                    'This will clear all recently played songs from the list.'),
+                title: Text('${LocaleKeys.clearRecentlyPlayed.tr()}?'),
+                content: Text(LocaleKeys.clearRecentlyPlayedDesc.tr()),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel'),
+                    child: Text(LocaleKeys.cancel.tr()),
                   ),
                   TextButton(
                     onPressed: () {
                       context.read<AudioDataProvider>().clearRecentlyPlayed();
                       Navigator.pop(context);
                     },
-                    child: const Text('Clear'),
+                    child: Text(LocaleKeys.clear.tr()),
                   ),
                 ],
               ),

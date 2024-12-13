@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:music_player/core/constants/app_constants.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,13 +18,13 @@ class AboutSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'About',
+          LocaleKeys.about.tr(),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
         ),
         10.ph,
         ListTile(
-          title:
-              Text('Developer', style: Theme.of(context).textTheme.titleMedium),
+          title: Text(LocaleKeys.developer.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
           subtitle: const Text('Muhammed Fazil vk'),
           leading: Icon(Icons.code,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
@@ -32,17 +34,16 @@ class AboutSection extends StatelessWidget {
         ),
         10.ph,
         ListTile(
-          title: Text('Translators',
+          title: Text(LocaleKeys.translators.tr(),
               style: Theme.of(context).textTheme.titleMedium),
-          subtitle: const Text('Some golden minded people.'),
           leading: Icon(Icons.translate,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {},
         ),
         10.ph,
         ListTile(
-          title:
-              Text('Version', style: Theme.of(context).textTheme.titleMedium),
+          title: Text(LocaleKeys.version.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
           subtitle: Text(AppInfo().appVersion),
           leading: Icon(Icons.info_outline,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
@@ -51,7 +52,7 @@ class AboutSection extends StatelessWidget {
             if (count == 3) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: const Text('You are a curious one.'),
+                    content: Text(LocaleKeys.youAreCuriousOne.tr()),
                     duration: const Duration(seconds: 2),
                     backgroundColor: Theme.of(context).primaryColor,
                     behavior: SnackBarBehavior.floating,
@@ -65,8 +66,8 @@ class AboutSection extends StatelessWidget {
         ),
         10.ph,
         ListTile(
-          title:
-              Text('Licence', style: Theme.of(context).textTheme.titleMedium),
+          title: Text(LocaleKeys.license.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
           subtitle: const Text('MIT License'),
           leading: HugeIcon(
               icon: HugeIcons.strokeRoundedLicense,

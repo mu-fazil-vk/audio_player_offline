@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/theme/theme.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/main.dart';
@@ -9,17 +11,17 @@ import 'package:music_player/widgets/settings.dart/color_picker_tile.dart';
 import 'package:provider/provider.dart';
 
 final _themeModes = [
-  const DropdownMenuItem(
+  DropdownMenuItem(
     value: "system",
-    child: Text("System"),
+    child: Text(LocaleKeys.theme_system.tr()),
   ),
-  const DropdownMenuItem(
+  DropdownMenuItem(
     value: "light",
-    child: Text("Light"),
+    child: Text(LocaleKeys.theme_light.tr()),
   ),
-  const DropdownMenuItem(
+  DropdownMenuItem(
     value: "dark",
-    child: Text("Dark"),
+    child: Text(LocaleKeys.theme_dark.tr()),
   ),
 ];
 
@@ -36,26 +38,26 @@ class CommonSettingsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Common',
+          LocaleKeys.common.tr(),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
         ),
         10.ph,
         ListTile(
-          title:
-              Text('Language', style: Theme.of(context).textTheme.titleMedium),
-          subtitle: const Text('Select your language.'),
+          title: Text(LocaleKeys.language.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
+          subtitle: Text(LocaleKeys.selectLanguage.tr()),
           leading: Icon(Icons.language,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {},
         ),
         10.ph,
         ListTile(
-          title: Text('Theme', style: Theme.of(context).textTheme.titleMedium),
+          title: Text(LocaleKeys.theme_title.tr(), style: Theme.of(context).textTheme.titleMedium),
           leading: Icon(Icons.dark_mode_rounded,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           trailing: CustomDropdown(
               items: _themeModes,
-              hint: 'Dark',
+              hint: LocaleKeys.theme_dark.tr(),
               selectedItem: context.watch<AppSettingsProvider>().themeMode,
               onChanged: (value) async {
                 if (value != null) {
@@ -84,7 +86,7 @@ class CommonSettingsSection extends StatelessWidget {
               useSystemColor: false,
             );
           },
-          title: 'Accent Color',
+          title: LocaleKeys.accentColor.tr(),
           themeMode: themeMode,
         ),
       ],

@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:marquee/marquee.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/format_duration.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -86,12 +88,12 @@ class CustomAudioListTile extends StatelessWidget {
                 startAfter: const Duration(seconds: 3),
                 pauseAfterRound: const Duration(seconds: 1),
                 velocity: 30,
-                text: audioInfo?.title ?? 'Unknown Title',
+                text: audioInfo?.title ?? LocaleKeys.unknownTitle.tr(),
               ),
             ),
       ),
       subtitle: Text(
-        audioInfo?.artist ?? 'Artist',
+        audioInfo?.artist ?? LocaleKeys.unknownArtist.tr(),
         style: const TextStyle(color: Colors.grey),
       ),
       trailing: isFavorite
