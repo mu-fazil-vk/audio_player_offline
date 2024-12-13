@@ -48,5 +48,7 @@ abstract class  LocaleKeys {
   static const youAreCuriousOne = 'youAreCuriousOne';
   static const license = 'license';
   static const share = 'share';
+  static const playlists = 'playlists';
+  static const favorites = 'favorites';
 
 }

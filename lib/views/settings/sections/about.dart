@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
@@ -25,11 +26,11 @@ class AboutSection extends StatelessWidget {
         ListTile(
           title: Text(LocaleKeys.developer.tr(),
               style: Theme.of(context).textTheme.titleMedium),
-          subtitle: const Text('Muhammed Fazil vk'),
+          subtitle: Text(AppInfo().developerName),
           leading: Icon(Icons.code,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           onTap: () {
-            _launchUrl('https://github.com/mu-fazil-vk');
+            _launchUrl(AppInfo().developerUrl);
           },
         ),
         10.ph,
@@ -38,7 +39,9 @@ class AboutSection extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium),
           leading: Icon(Icons.translate,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
-          onTap: () {},
+          onTap: () {
+            context.goNamed('translators');
+          },
         ),
         10.ph,
         ListTile(

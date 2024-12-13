@@ -46,5 +46,7 @@
     "version": "Version",
     "youAreCuriousOne": "You are a curious one, aren't you?",
     "license": "License",
-    "share": "Share"
+    "share": "Share",
+    "playlists": "Playlists",
+    "favorites": "Favorites"
 }

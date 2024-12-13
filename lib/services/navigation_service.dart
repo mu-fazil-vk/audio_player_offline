@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:music_player/views/album_songs/album_songs_screen.dart';
 import 'package:music_player/views/all_songs/all_songs_screen.dart';
 import 'package:music_player/views/bottom_avigation/bottom_navigation.dart';
-import 'package:music_player/views/favorites/favorites_screen.dart';
+import 'package:music_player/views/playlists/favorites_screen.dart';
 import 'package:music_player/views/home/home_screen.dart';
 import 'package:music_player/views/player/full_screen_player.dart';
+import 'package:music_player/views/playlists/playlists_screen.dart';
 import 'package:music_player/views/settings/settings_screen.dart';
+import 'package:music_player/views/settings/translators_screen.dart';
 
 class NavigationService {
   factory NavigationService() {
@@ -74,7 +76,7 @@ class NavigationService {
   static const String homePath = '/home';
   static const String searchPath = '/search';
   static const String settingsPath = '/settings';
-  static const String favoritesPath = '/favorites';
+  static const String playlistsPath = '/playlists';
   static const String allSongs = '/all-songs';
   static const String albumSongs = '/album-songs';
 
@@ -115,10 +117,17 @@ class NavigationService {
             path: searchPath,
             pageBuilder: (context, GoRouterState state) {
               return getPage(
-                child: const FavoriteScreen(),
+                child: const PlaylistsScreen(),
                 state: state,
               );
             },
+            routes: [
+              GoRoute(
+                name: 'favorites',
+                path: 'favorites',
+                builder: (context, state) => const FavoriteScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -133,19 +142,13 @@ class NavigationService {
                 state: state,
               );
             },
-            // routes: [
-            //   GoRoute(
-            //     path: 'license',
-            //     builder: (context, state) => const LicensePage(
-            //       applicationName: 'Musify',
-            //       applicationVersion: appVersion,
-            //     ),
-            //   ),
-            //   GoRoute(
-            //     path: 'about',
-            //     builder: (context, state) => const AboutPage(),
-            //   ),
-            // ],
+            routes: [
+              GoRoute(
+                path: 'translators',
+                name: 'translators',
+                builder: (context, state) => const TranslatorsScreen(),
+              ),
+            ],
           ),
         ],
       ),
