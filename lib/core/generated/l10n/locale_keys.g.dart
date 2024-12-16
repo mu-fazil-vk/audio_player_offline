@@ -50,5 +50,9 @@ abstract class  LocaleKeys {
   static const share = 'share';
   static const playlists = 'playlists';
   static const favorites = 'favorites';
+  static const noPlaylists = 'noPlaylists';
+  static const noSongs = 'noSongs';
+  static const useClassicControls = 'useClassicControls';
+  static const addToFavorites = 'addToFavorites';
 
 }

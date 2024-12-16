@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
+import 'package:music_player/models/playlist.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
+import 'package:music_player/widgets/common/add_playlist_dialogue.dart';
 import 'package:provider/provider.dart';
 
 class PlaylistsScreen extends StatelessWidget {
@@ -24,7 +26,12 @@ class PlaylistsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => addPlaylistDialogue(context),
+                );
+              },
               icon: const Icon(Icons.add),
               style: TextButton.styleFrom(
                 backgroundColor:
@@ -40,18 +47,14 @@ class PlaylistsScreen extends StatelessWidget {
             ),
             20.ph,
             Expanded(
-              child: FutureBuilder(
-                  future: context.read<AudioDataProvider>().getUserPlaylists(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(snapshot.error.toString()),
-                      );
-                    }
+              child: Selector<AudioDataProvider,
+                      (List<CustomPlaylistModel?>, int)>(
+                  selector: (_, provider) => (
+                        provider.customPlaylists,
+                        provider.likedSongs.length,
+                      ),
+                  builder: (context, data, child) {
+                    final (customPlaylists, likedSongsCount) = data;
                     return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -59,12 +62,16 @@ class PlaylistsScreen extends StatelessWidget {
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                       ),
-                      itemCount: 10,
+                      itemCount: customPlaylists.length + 1,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
                             if (index == 0) {
                               context.goNamed('favorites');
+                            } else {
+                              context.goNamed('playlist-view', pathParameters: {
+                                'id': customPlaylists[index - 1]!.id
+                              });
                             }
                           },
                           child: Card(
@@ -76,25 +83,47 @@ class PlaylistsScreen extends StatelessWidget {
                             child: Column(
                               children: [
                                 Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      // image: const DecorationImage(
-                                      //   image: AssetImage('assets/images/playlist.jpg'),
-                                      //   fit: BoxFit.cover,
-                                      // ),
-                                    ),
-                                    child: index == 0
-                                        ? Center(
-                                            child: Icon(
-                                              Icons.favorite,
-                                              size: 40,
+                                  child: Stack(
+                                    children: [
+                                      if (index != 0)
+                                        Positioned(
+                                          right: 10,
+                                          top: 5,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
                                               color: Theme.of(context)
-                                                  .primaryColor,
+                                                  .primaryColor
+                                                  .withOpacity(0.3),
+                                              shape: BoxShape.circle,
                                             ),
-                                          )
-                                        : null,
+                                            child: Text(
+                                              index == 0
+                                                  ? likedSongsCount.toString()
+                                                  : '${customPlaylists[index - 1]?.songs.length ?? 0}',
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                        ),
+                                      Container(
+                                        margin: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                        ),
+                                        child: index == 0
+                                            ? Center(
+                                                child: Icon(
+                                                  Icons.favorite,
+                                                  size: 40,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 Padding(
@@ -102,7 +131,7 @@ class PlaylistsScreen extends StatelessWidget {
                                   child: Text(
                                     index == 0
                                         ? LocaleKeys.favorites.tr()
-                                        : 'Playlist $index',
+                                        : customPlaylists[index - 1]!.name,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),

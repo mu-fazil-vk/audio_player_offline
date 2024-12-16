@@ -38,7 +38,10 @@ class AudioBannerWidget extends StatelessWidget {
                     .withOpacity(0.3),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: MediaQuery.of(context).platformBrightness ==
+                            Brightness.dark
+                        ? Colors.black12.withOpacity(0.05)
+                        : Colors.black.withOpacity(0.2),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -64,14 +67,14 @@ class AudioBannerWidget extends StatelessWidget {
                       width: 2,
                     ),
                   ),
-                  child: appSettings.showAudioVisualizer
+                  child: appSettings.showAudioAnimation
                       ? SizedBox(
                           height: 100,
                           width: 100,
                           child: Lottie.asset(
                             height: 100,
                             width: 100,
-                            'assets/lottie/${appSettings.visualizerStyle.toLowerCase()}.json',
+                            'assets/lottie/${appSettings.audioAnimationStyle.toLowerCase()}.json',
                           ))
                       : HugeIcon(
                           icon: HugeIcons.strokeRoundedMusicNote04,

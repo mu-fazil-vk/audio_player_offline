@@ -6,6 +6,7 @@ import 'package:music_player/views/bottom_avigation/bottom_navigation.dart';
 import 'package:music_player/views/playlists/favorites_screen.dart';
 import 'package:music_player/views/home/home_screen.dart';
 import 'package:music_player/views/player/full_screen_player.dart';
+import 'package:music_player/views/playlists/playlist_view_screen.dart';
 import 'package:music_player/views/playlists/playlists_screen.dart';
 import 'package:music_player/views/settings/settings_screen.dart';
 import 'package:music_player/views/settings/translators_screen.dart';
@@ -126,6 +127,13 @@ class NavigationService {
                 name: 'favorites',
                 path: 'favorites',
                 builder: (context, state) => const FavoriteScreen(),
+              ),
+              GoRoute(
+                name: 'playlist-view',
+                path: 'playlist-view/:id',
+                builder: (context, state) => PlaylistViewScreen(
+                  playListId: state.pathParameters['id']!,
+                ),
               ),
             ],
           ),

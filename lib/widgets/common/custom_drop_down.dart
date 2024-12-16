@@ -27,7 +27,7 @@ class CustomDropdown extends StatelessWidget {
         hint: Text(hint, style: Theme.of(context).textTheme.bodyMedium),
         icon: const Icon(Icons.arrow_drop_down),
         iconSize: 24,
-        elevation: 16,
+        elevation: 0,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontSize: 16,
             ),

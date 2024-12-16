@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/providers/audio_data_provider.dart';
+import 'package:provider/provider.dart';
 
 @HiveType(typeId: 1)
 class AppSettingsProvider extends ChangeNotifier {
@@ -9,8 +11,10 @@ class AppSettingsProvider extends ChangeNotifier {
   Box? _userBox;
 
   // Audio Settings
-  late bool _showAudioVisualizer;
-  late String _visualizerStyle;
+  late bool _showAudioAnimation;
+  late String _audioAnimationStyle;
+
+  late bool _isClassicPlayer;
 
   // Theme Settings
   late String _themeMode;
@@ -35,8 +39,8 @@ class AppSettingsProvider extends ChangeNotifier {
 
     // Load all settings with defaults
 
-    _showAudioVisualizer = _box.get('showAudioVisualizer', defaultValue: true);
-    _visualizerStyle = _box.get('visualizerStyle', defaultValue: 'Music2');
+    _showAudioAnimation = _box.get('showAudioAnimation', defaultValue: true);
+    _audioAnimationStyle = _box.get('audioAnimationStyle', defaultValue: 'Music2');
 
     _themeMode = _box.get('themeMode', defaultValue: 'system');
     _primaryColor = Color(_box.get('primaryColor', defaultValue: 0xff91cef4));
@@ -45,28 +49,30 @@ class AppSettingsProvider extends ChangeNotifier {
 
     _shuffle = _box.get('shuffle', defaultValue: false);
     _repeat = _box.get('repeat', defaultValue: false);
+    _isClassicPlayer = _box.get('isClassicPlayer', defaultValue: false);
   }
 
   // Getters
-  bool get showAudioVisualizer => _showAudioVisualizer;
-  String get visualizerStyle => _visualizerStyle;
+  bool get showAudioAnimation => _showAudioAnimation;
+  String get audioAnimationStyle => _audioAnimationStyle;
   String get themeMode => _themeMode;
   Color get primaryColor => _primaryColor;
   String get language => _language;
   bool get shuffle => _shuffle;
   bool get repeat => _repeat;
+  bool get isClassicPlayer => _isClassicPlayer;
 
   // Setters with persistence
 
   Future<void> setShowAudioVisualizer(bool value) async {
-    _showAudioVisualizer = value;
-    await _box.put('showAudioVisualizer', value);
+    _showAudioAnimation = value;
+    await _box.put('showAudioAnimation', value);
     notifyListeners();
   }
 
   Future<void> setVisualizerStyle(String value) async {
-    _visualizerStyle = value;
-    await _box.put('visualizerStyle', value);
+    _audioAnimationStyle = value;
+    await _box.put('audioAnimationStyle', value);
     notifyListeners();
   }
 
@@ -100,19 +106,25 @@ class AppSettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> clearAllData() async {
+  Future<void> setIsClassicPlayer(bool value) async {
+    _isClassicPlayer = value;
+    await _box.put('isClassicPlayer', value);
+    notifyListeners();
+  }
+
+  Future<void> clearAllData(BuildContext context) async {
     await _box.clear();
     await _initializeSettings();
     if (Hive.isBoxOpen(_userBoxName)) {
       _userBox = Hive.box(_userBoxName);
       await _userBox!.clear();
     } else {
-      await Hive.openBox(_userBoxName);
-      _userBox = Hive.box(_userBoxName);
+      _userBox = await Hive.openBox(_userBoxName);
       await _userBox!.clear();
     }
-    if (Hive.isBoxOpen('user')) {
-      await Hive.openBox('user');
+    notifyListeners();
+    if (context.mounted) {
+      context.read<AudioDataProvider>().clearCaches();
     }
     notifyListeners();
   }

@@ -6,7 +6,6 @@ abstract class AudioDataService {
   Future<(Exception?, List<SongModel>?)> getAllSongs();
   Future<(Exception?, List<AlbumModel>?)> getAllAlbumsList();
   Future<(Exception?, List<SongModel>?)> getAlbumsList(int albumId);
-  Future<void> getUserPlaylists();
 }
 
 class AudioDataServiceImpl implements AudioDataService {
@@ -96,17 +95,6 @@ class AudioDataServiceImpl implements AudioDataService {
     } catch (e, stackTrace) {
       log('Error in fetchAlbumsList \n$e\n\n$stackTrace');
       return (Exception('Error'), null);
-    }
-  }
-
-  @override
-  Future<List> getUserPlaylists() async {
-    try {
-      // Fetch user playlists from Storage.
-      return [];
-    } catch (e, stackTrace) {
-      log('Error in fetchUserPlaylists \n$e\n\n$stackTrace');
-      return [];
     }
   }
 }

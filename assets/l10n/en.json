@@ -48,5 +48,9 @@
     "license": "License",
     "share": "Share",
     "playlists": "Playlists",
-    "favorites": "Favorites"
+    "favorites": "Favorites",
+    "noPlaylists": "You have not created any playlists yet",
+    "noSongs": "No songs added yet",
+    "useClassicControls": "Use Classic Controls",
+    "addToFavorites": "Add to Favorites"
 }

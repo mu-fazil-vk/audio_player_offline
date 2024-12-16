@@ -7,10 +7,13 @@ import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/models/song_model.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
 import 'package:music_player/providers/audio_provider.dart';
+import 'package:music_player/providers/settings_provider.dart';
+import 'package:music_player/widgets/common/add_playlist_dialogue.dart';
 import 'package:music_player/widgets/common/custom_audio_list_tile.dart';
 import 'package:music_player/widgets/player/advanced_player_controllers.dart';
 import 'package:music_player/widgets/player/audio_banner.dart';
 import 'package:music_player/widgets/player/basic_audio_controllers.dart';
+import 'package:music_player/widgets/player/classic_control_buttons.dart';
 import 'package:music_player/widgets/player/custom_slider.dart';
 import 'package:music_player/widgets/player/more_options_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -105,12 +108,17 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
                 ),
                 // Progress Bar
                 const CustomSlider(),
-                //ToDo: Classic Control Buttons
-                //const ClassicControlButtons(),
-                const BasicAudioControllersWidget(),
-                40.ph,
-                // More controls
-                const AdvancedPlayerControllersWidget(),
+
+                if (context.watch<AppSettingsProvider>().isClassicPlayer) ...[
+                  30.ph,
+                  const ClassicControlButtons()
+                ] else ...[
+                  const BasicAudioControllersWidget(),
+
+                  40.ph,
+                  // More controls
+                  const AdvancedPlayerControllersWidget(),
+                ],
                 20.ph,
                 GestureDetector(
                   onVerticalDragEnd: (details) => showModalBottomSheet(
@@ -131,82 +139,6 @@ class _FullScreenMusicPlayerState extends State<FullScreenMusicPlayer> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  AlertDialog addPlaylistDialogue(BuildContext context) {
-    return AlertDialog(
-      title: Text(LocaleKeys.addToPlaylist.tr()),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // List of playlists
-          ...context.watch<AudioDataProvider>().customPlaylists.map((playlist) {
-            return ListTile(
-              leading: const Icon(Icons.playlist_play),
-              title: Text(playlist!.name),
-              trailing: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text('${playlist.songs.length}',
-                      style: const TextStyle(fontSize: 16))),
-              onTap: () {
-                // Add the current song to the selected playlist
-                context.read<AudioDataProvider>().addSongToPlaylist(
-                    context
-                        .read<AudioProvider>()
-                        .currentPlayingAudio!
-                        .id
-                        .toString(),
-                    playlist.id);
-                Navigator.pop(context);
-              },
-            );
-          }),
-          // Add new playlist
-          TextButton(
-            child: Text(LocaleKeys.newPlaylist.tr()),
-            onPressed: () {
-              // Show dialog to create new playlist
-              showDialog(
-                context: context,
-                builder: (ctx) {
-                  final TextEditingController controller =
-                      TextEditingController();
-                  return AlertDialog(
-                    title: Text(LocaleKeys.newPlaylist.tr()),
-                    content: TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        hintText: LocaleKeys.playlistName.tr(),
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(LocaleKeys.cancel.tr()),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // Create new playlist
-                          context
-                              .read<AudioDataProvider>()
-                              .createCustomPlaylist(controller.text, null);
-                          Navigator.pop(context);
-                        },
-                        child: Text(LocaleKeys.create.tr()),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
       ),
     );
   }

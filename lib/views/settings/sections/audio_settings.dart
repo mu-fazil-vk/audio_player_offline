@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
 import 'package:music_player/providers/audio_data_provider.dart';
+import 'package:music_player/providers/audio_provider.dart';
 import 'package:music_player/providers/settings_provider.dart';
 import 'package:music_player/widgets/common/custom_drop_down.dart';
 import 'package:provider/provider.dart';
@@ -30,11 +31,11 @@ class AudioSettingsSection extends StatelessWidget {
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           title: Text(LocaleKeys.audioBannerAnimation.tr(),
               style: Theme.of(context).textTheme.titleMedium),
-          value: settings.showAudioVisualizer,
+          value: settings.showAudioAnimation,
           onChanged: (value) => settings.setShowAudioVisualizer(value),
         ),
         10.ph,
-        if (settings.showAudioVisualizer)
+        if (settings.showAudioAnimation)
           ListTile(
             leading: HugeIcon(
                 icon: HugeIcons.strokeRoundedVoiceId,
@@ -43,7 +44,7 @@ class AudioSettingsSection extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium),
             trailing: CustomDropdown(
                 hint: 'Music',
-                selectedItem: settings.visualizerStyle,
+                selectedItem: settings.audioAnimationStyle,
                 items: [
                   'Music',
                   'Music 1',
@@ -62,6 +63,15 @@ class AudioSettingsSection extends StatelessWidget {
                     settings.setVisualizerStyle(value!.replaceAll(' ', ''))),
           ),
         10.ph,
+        SwitchListTile(
+          secondary: HugeIcon(
+              icon: HugeIcons.strokeRoundedPlayCircle,
+              color: Theme.of(context).buttonTheme.colorScheme!.primary),
+          title: Text(LocaleKeys.useClassicControls.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
+          value: settings.isClassicPlayer,
+          onChanged: (value) => settings.setIsClassicPlayer(value),
+        ),
         ListTile(
           title: Text(LocaleKeys.clearData.tr(),
               style: Theme.of(context).textTheme.titleMedium),
@@ -81,7 +91,7 @@ class AudioSettingsSection extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      settings.clearAllData();
+                      settings.clearAllData(context);
                       Navigator.pop(context);
                     },
                     child: Text(LocaleKeys.clear.tr()),
@@ -111,6 +121,9 @@ class AudioSettingsSection extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       context.read<AudioDataProvider>().clearRecentlyPlayed();
+                      context
+                          .read<AudioProvider>()
+                          .setCurrentPlayingAudio(null);
                       Navigator.pop(context);
                     },
                     child: Text(LocaleKeys.clear.tr()),

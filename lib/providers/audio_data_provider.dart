@@ -140,8 +140,10 @@ class AudioDataProvider extends ChangeNotifier {
         .toList();
   }
 
-  Future<void> getUserPlaylists() async {
-    await _audioDataService.getUserPlaylists();
+  Future<List<CustomPlaylistModel>> getUserPlaylists() async {
+    _customPlaylists = await _userBox.get('customPlaylists', defaultValue: []);
+    notifyListeners();
+    return _customPlaylists.map((e) => CustomPlaylistModel.fromMap(e)).toList();
   }
 
   String createCustomPlaylist(String playlistName, String? image) {
@@ -206,5 +208,8 @@ class AudioDataProvider extends ChangeNotifier {
     _cachedAlbums = null;
     _lastAlbumsFetch = null;
     _albumSongsCache.clear();
+    _allSongs.clear();
+    _customPlaylists.clear();
+    _loadInitialData();
   }
 }

@@ -17,9 +17,8 @@ class ClassicControlButtons extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             IconButton(
-              icon: Icon(audioProvider.shuffleNotifier.value
-                  ? Icons.shuffle_on
-                  : Icons.shuffle),
+              icon: const Icon(Icons.shuffle),
+              isSelected: audioProvider.shuffleNotifier.value,
               onPressed: () async {
                 await audioProvider.toggleShuffle();
               },
@@ -50,9 +49,8 @@ class ClassicControlButtons extends StatelessWidget {
               },
             ),
             IconButton(
-              icon: Icon(audioProvider.repeatNotifier.value
-                  ? Icons.repeat_on
-                  : Icons.repeat),
+              icon: const Icon(Icons.repeat),
+              isSelected: audioProvider.repeatNotifier.value,
               onPressed: () async {
                 await audioProvider.toggleRepeat();
               },
