@@ -48,6 +48,9 @@ class MiniMusicPlayer extends StatelessWidget {
                             .currentPlayingAudio!
                             .id,
                         type: ArtworkType.AUDIO,
+                        artworkQuality: FilterQuality.medium,
+                        keepOldArtwork: true,
+                        artworkBorder: BorderRadius.circular(15),
                         nullArtworkWidget: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),

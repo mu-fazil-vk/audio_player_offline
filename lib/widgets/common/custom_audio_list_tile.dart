@@ -64,6 +64,8 @@ class CustomAudioListTile extends StatelessWidget {
         child: QueryArtworkWidget(
           id: audioInfo!.id,
           type: ArtworkType.AUDIO,
+          artworkQuality: FilterQuality.high,
+          artworkBorder: BorderRadius.circular(15),
           nullArtworkWidget: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),

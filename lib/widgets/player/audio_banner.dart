@@ -50,6 +50,9 @@ class AudioBannerWidget extends StatelessWidget {
               child: QueryArtworkWidget(
                 id: audioId,
                 type: ArtworkType.AUDIO,
+                quality: 100,
+                artworkQuality: FilterQuality.high,
+                artworkBorder: BorderRadius.circular(15),
                 nullArtworkWidget: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

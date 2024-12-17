@@ -35,6 +35,8 @@ class AudioCardWidget extends StatelessWidget {
               child: QueryArtworkWidget(
                 id: audioId,
                 type: isAlbum ? ArtworkType.ALBUM : ArtworkType.AUDIO,
+                artworkQuality: FilterQuality.high,
+                artworkBorder: BorderRadius.circular(15),
                 nullArtworkWidget: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

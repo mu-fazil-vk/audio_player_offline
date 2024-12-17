@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 /// [AudioModel] that contains all [Song] Information.
 class AudioModel {
@@ -178,7 +179,7 @@ class AudioModel {
   }
 
   /// Factory constructor to create your SongModel from their SongModel
-  factory AudioModel.fromTheirSongModel(dynamic theirSongModel) {
+  factory AudioModel.fromTheirSongModel(SongModel theirSongModel) {
     return AudioModel({
       "_id": theirSongModel.id,
       "_data": theirSongModel.data,
@@ -191,7 +192,7 @@ class AudioModel {
       "artist": theirSongModel.artist,
       "artist_id": theirSongModel.artistId,
       "genre": theirSongModel.genre,
-      "genre_id": theirSongModel.genreId,
+      //"genre_id": theirSongModel.genreId?.toInt(),
       "bookmark": theirSongModel.bookmark,
       "composer": theirSongModel.composer,
       "date_added": theirSongModel.dateAdded,
