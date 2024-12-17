@@ -54,5 +54,11 @@ abstract class  LocaleKeys {
   static const noSongs = 'noSongs';
   static const useClassicControls = 'useClassicControls';
   static const addToFavorites = 'addToFavorites';
+  static const addedToPlaylist = 'addedToPlaylist';
+  static const removedFromPlaylist = 'removedFromPlaylist';
+  static const deletePlaylist = 'deletePlaylist';
+  static const deletePlaylistDesc = 'deletePlaylistDesc';
+  static const yes = 'yes';
+  static const no = 'no';
 
 }

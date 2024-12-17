@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/models/playlist.dart';
 import 'package:music_player/models/song_model.dart';
+import 'package:music_player/widgets/common/snackbar_widget.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../services/audio_data_service.dart';
 
@@ -160,6 +163,12 @@ class AudioDataProvider extends ChangeNotifier {
     return 'Playlist created successfully!';
   }
 
+  void deleteCustomPlaylist(String playlistId) {
+    _customPlaylists.removeWhere((playlist) => playlist['id'] == playlistId);
+    _updateStorage('customPlaylists', _customPlaylists);
+    notifyListeners();
+  }
+
   void toggleSongLike(String songId, bool isLiked) {
     if (isLiked && !_likedSongs.any((likedSongId) => likedSongId == songId)) {
       _likedSongs.add(songId);
@@ -178,14 +187,31 @@ class AudioDataProvider extends ChangeNotifier {
     }
   }
 
-  void addSongToPlaylist(String songId, String playlistId) {
+  void addSongToPlaylist(
+      String songId, String playlistId, BuildContext context) {
     final playlist = _customPlaylists.firstWhere(
         (playlist) => playlist['id'] == playlistId,
         orElse: () => null);
     if (playlist == null) return;
-    (playlist['songs'] as List).contains(songId)
-        ? (playlist['songs'] as List).remove(songId)
-        : (playlist['songs'] as List).add(songId);
+    if ((playlist['songs'] as List).contains(songId)) {
+      (playlist['songs'] as List).remove(songId);
+      showCustomSnackBar(context, LocaleKeys.removedFromPlaylist.tr());
+    } else {
+      (playlist['songs'] as List).add(songId);
+      showCustomSnackBar(context, LocaleKeys.addedToPlaylist.tr());
+    }
+    _updateStorage('customPlaylists', _customPlaylists);
+    notifyListeners();
+  }
+
+  void removeSongFromPlaylist(
+      String songId, String playlistId, BuildContext context) {
+    final playlist = _customPlaylists.firstWhere(
+        (playlist) => playlist['id'] == playlistId,
+        orElse: () => null);
+    if (playlist == null) return;
+    (playlist['songs'] as List).remove(songId);
+    showCustomSnackBar(context, LocaleKeys.removedFromPlaylist.tr());
     _updateStorage('customPlaylists', _customPlaylists);
     notifyListeners();
   }

@@ -1,3 +1,4 @@
+import 'package:music_player/models/language.dart';
 import 'package:music_player/models/translator.dart';
 
 const String kTestImage = 'assets/test.jpg';
@@ -15,5 +16,14 @@ class AppInfo {
       languages: 'English, Malayalam',
       profileUrl: 'https://github.com/mu-fazil-vk/',
     ),
+  ];
+
+  final List<LanguageModel> supportedLanguages = [
+    LanguageModel(name: 'English', code: 'en'),
+    LanguageModel(
+        name: 'മലയാളം',
+        code: 'ml',
+        englishName: 'Malayalam',
+        countryCode: 'in'),
   ];
 }

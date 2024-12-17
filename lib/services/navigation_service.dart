@@ -8,6 +8,8 @@ import 'package:music_player/views/home/home_screen.dart';
 import 'package:music_player/views/player/full_screen_player.dart';
 import 'package:music_player/views/playlists/playlist_view_screen.dart';
 import 'package:music_player/views/playlists/playlists_screen.dart';
+import 'package:music_player/views/search/search_screen.dart';
+import 'package:music_player/views/settings/languages_screen.dart';
 import 'package:music_player/views/settings/settings_screen.dart';
 import 'package:music_player/views/settings/translators_screen.dart';
 
@@ -107,6 +109,11 @@ class NavigationService {
                         ) ??
                         0),
               ),
+               GoRoute(
+                path: searchPath,
+                name: 'search',
+                builder: (context, state) => const SearchScreen(),
+              ),
             ],
           ),
         ],
@@ -115,7 +122,7 @@ class NavigationService {
         navigatorKey: favoriteTabNavigatorKey,
         routes: [
           GoRoute(
-            path: searchPath,
+            path: playlistsPath,
             pageBuilder: (context, GoRouterState state) {
               return getPage(
                 child: const PlaylistsScreen(),
@@ -155,6 +162,11 @@ class NavigationService {
                 path: 'translators',
                 name: 'translators',
                 builder: (context, state) => const TranslatorsScreen(),
+              ),
+              GoRoute(
+                path: 'languages',
+                name: 'languages',
+                builder: (context, state) => const LanguagesScreen(),
               ),
             ],
           ),

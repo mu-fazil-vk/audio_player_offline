@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:music_player/providers/audio_provider.dart';
@@ -76,6 +77,9 @@ class _BottomNavigationScreenState extends State<BottomNavigationScreen> {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _selectedIndex.value,
+          labelBehavior: context.locale == const Locale('en')
+              ? NavigationDestinationLabelBehavior.onlyShowSelected
+              : NavigationDestinationLabelBehavior.alwaysHide,
           onDestinationSelected: (index) {
             widget.body.goBranch(
               index,

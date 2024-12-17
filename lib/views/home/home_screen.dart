@@ -27,13 +27,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () async {
-                // changeLanguage(lang) {
-                // setState(() {
-                var lang = context.locale == const Locale('en') ? 'ml' : 'en';
-                context.setLocale(Locale(lang));
-                // });
-                // }
-                //context.push('/search');
+                context.pushNamed('search');
               },
               icon: const Icon(Icons.search))
         ],

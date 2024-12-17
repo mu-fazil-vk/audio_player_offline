@@ -25,24 +25,32 @@ class PlaylistsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            TextButton.icon(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => addPlaylistDialogue(context),
-                );
-              },
-              icon: const Icon(Icons.add),
-              style: TextButton.styleFrom(
-                backgroundColor:
-                    Theme.of(context).primaryColor.withOpacity(0.3),
-              ),
-              label: Text(
-                LocaleKeys.playlists.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontSize: 18),
+            SizedBox(
+              height: 40,
+              child: TextButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => addPlaylistDialogue(context),
+                  );
+                },
+                icon: const Icon(
+                  Icons.add,
+                  size: 20,
+                ),
+                style: TextButton.styleFrom(
+                  backgroundColor:
+                      Theme.of(context).primaryColor.withOpacity(0.3),
+                  maximumSize: const Size(200, 40),
+                ),
+                label: Text(
+                  LocaleKeys.playlists.tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(fontSize: 15),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
             20.ph,

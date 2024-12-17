@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/theme/theme.dart';
 import 'package:music_player/core/utils/size_extension.dart';
@@ -48,11 +49,18 @@ class CommonSettingsSection extends StatelessWidget {
           subtitle: Text(LocaleKeys.selectLanguage.tr()),
           leading: Icon(Icons.language,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
-          onTap: () {},
+          trailing: Text(
+            context.locale.toLanguageTag().toUpperCase(),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          onTap: () {
+            context.goNamed('languages');
+          },
         ),
         10.ph,
         ListTile(
-          title: Text(LocaleKeys.theme_title.tr(), style: Theme.of(context).textTheme.titleMedium),
+          title: Text(LocaleKeys.theme_title.tr(),
+              style: Theme.of(context).textTheme.titleMedium),
           leading: Icon(Icons.dark_mode_rounded,
               color: Theme.of(context).buttonTheme.colorScheme!.primary),
           trailing: CustomDropdown(

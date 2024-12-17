@@ -52,5 +52,11 @@
     "noPlaylists": "You have not created any playlists yet",
     "noSongs": "No songs added yet",
     "useClassicControls": "Use Classic Controls",
-    "addToFavorites": "Add to Favorites"
+    "addToFavorites": "Add to Favorites",
+    "addedToPlaylist": "Added to Playlist",
+    "removedFromPlaylist": "Removed from Playlist",
+    "deletePlaylist": "Delete Playlist",
+    "deletePlaylistDesc": "Are you sure you want to delete this playlist?",
+    "yes": "Yes",
+    "no": "No"
 }

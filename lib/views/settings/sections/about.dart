@@ -5,6 +5,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:music_player/core/constants/app_constants.dart';
 import 'package:music_player/core/generated/l10n/locale_keys.g.dart';
 import 'package:music_player/core/utils/size_extension.dart';
+import 'package:music_player/widgets/common/snackbar_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutSection extends StatelessWidget {
@@ -53,16 +54,7 @@ class AboutSection extends StatelessWidget {
           onTap: () {
             count++;
             if (count == 3) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(LocaleKeys.youAreCuriousOne.tr()),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    behavior: SnackBarBehavior.floating,
-                    margin:
-                        const EdgeInsets.only(left: 50, right: 50, bottom: 10),
-                    shape: const StadiumBorder()),
-              );
+              showCustomSnackBar(context, LocaleKeys.youAreCuriousOne.tr());
               count = 0;
             }
           },

@@ -14,10 +14,14 @@ AlertDialog addPlaylistDialogue(BuildContext context) {
       child: Column(
         children: [
           SizedBox(
-            height: context.read<AudioDataProvider>().customPlaylists.isEmpty
+            height: context
+                    .select((AudioDataProvider p) => p.customPlaylists)
+                    .isEmpty
                 ? 80
                 : 200,
-            child: context.read<AudioDataProvider>().customPlaylists.isEmpty
+            child: context
+                    .select((AudioDataProvider p) => p.customPlaylists)
+                    .isEmpty
                 ? Center(
                     child: Text(LocaleKeys.noPlaylists.tr()),
                   )
@@ -27,8 +31,7 @@ AlertDialog addPlaylistDialogue(BuildContext context) {
                       children: [
                         // List of playlists
                         ...context
-                            .watch<AudioDataProvider>()
-                            .customPlaylists
+                            .select((AudioDataProvider p) => p.customPlaylists)
                             .map((playlist) {
                           return ListTile(
                             leading: const Icon(Icons.playlist_play),
@@ -53,7 +56,8 @@ AlertDialog addPlaylistDialogue(BuildContext context) {
                                           .currentPlayingAudio!
                                           .id
                                           .toString(),
-                                      playlist.id);
+                                      playlist.id,
+                                      context);
                               Navigator.pop(context);
                             },
                           );
